@@ -277,6 +277,17 @@ if ($activeTab === 'pricing-audit') {
 }
 
 if ($activeTab === 'rebates') {
+    $rebateSuppliers = [];
+    try {
+        foreach (BeverageWarehouseService::getProducts() as $product) {
+            $supplier = trim((string)($product['supplier'] ?? ''));
+            if ($supplier !== '') {
+                $rebateSuppliers[strtoupper($supplier)] = $supplier;
+            }
+        }
+    } catch (Throwable) {
+        $rebateSuppliers = [];
+    }
     $catalog = [];
     $availableProducts = [];
     $totalAvailableStock = 0;

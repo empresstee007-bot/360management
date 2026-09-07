@@ -4200,6 +4200,17 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                 $rebateSettlements = class_exists('App\Modules\Pos\PricingRebateService')
                     ? \App\Modules\Pos\PricingRebateService::getRebateSettlements()
                     : [];
+                $rebateSuppliers = is_array($rebateSuppliers ?? null) ? $rebateSuppliers : [];
+                foreach ($rebateRules as $rebateRule) {
+                    if (strtolower((string)($rebateRule['level'] ?? '')) !== 'supplier') {
+                        continue;
+                    }
+                    $supplier = trim((string)($rebateRule['target_key'] ?? ''));
+                    if ($supplier !== '') {
+                        $rebateSuppliers[strtoupper($supplier)] = $supplier;
+                    }
+                }
+                asort($rebateSuppliers, SORT_NATURAL | SORT_FLAG_CASE);
             ?>
             <section class="transfer-screen">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
@@ -4296,7 +4307,7 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                         <form method="post" action="<?= url('beverage_pos.php?tab=rebates') ?>" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;align-items:end;margin-bottom:1rem">
                             <?= csrf_field() ?>
                             <input type="hidden" name="form_action" value="record_rebate_settlement">
-                            <div class="settings-field"><label>Supplier</label><input type="text" name="supplier" placeholder="Seven-Up"></div>
+                            <div class="settings-field"><label for="rebateSupplier">Supplier</label><select id="rebateSupplier" name="supplier"><option value="">Select supplier</option><?php foreach ($rebateSuppliers as $supplier): ?><option value="<?= e((string)$supplier) ?>"><?= e((string)$supplier) ?></option><?php endforeach; ?></select></div>
                             <div class="settings-field"><label>SKU / ALL</label><input type="text" name="sku" placeholder="PEP-PET-60CL-12"></div>
                             <div class="settings-field"><label>Period Start</label><input type="date" name="period_start" value="<?= date('Y-m-01') ?>"></div>
                             <div class="settings-field"><label>Period End</label><input type="date" name="period_end" value="<?= date('Y-m-t') ?>"></div>
