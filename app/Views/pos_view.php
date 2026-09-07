@@ -4235,6 +4235,13 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                     $rebateSupplierProducts[$supplierName] = $products;
                 }
                 $catalogProducts = [];
+                $catalogProductsBySupplier = [];
+                $supplierBrandMap = [];
+                foreach (is_array($supplierCatalog ?? null) ? $supplierCatalog : [] as $supplierName => $brands) {
+                    foreach (array_keys(is_array($brands) ? $brands : []) as $brand) {
+                        $supplierBrandMap[strtoupper(trim((string)$brand))] = $supplierName;
+                    }
+                }
                 foreach (is_array($catalog ?? null) ? $catalog : [] as $product) {
                     $sku = trim((string)($product['sku'] ?? ''));
                     if ($sku === '') {
@@ -4243,13 +4250,22 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                     $label = trim((string)($product['name'] ?? $sku)) . ' - ' . $sku;
                     $catalogProducts[] = ['value' => $sku, 'label' => $label];
                     $supplier = trim((string)($product['supplier'] ?? ''));
+                    if ($supplier === '') {
+                        $productName = strtoupper(trim((string)($product['name'] ?? '')));
+                        foreach ($supplierBrandMap as $brand => $mappedSupplier) {
+                            if ($brand !== '' && str_contains($productName, $brand)) {
+                                $supplier = $mappedSupplier;
+                                break;
+                            }
+                        }
+                    }
+                    $supplier = $supplier !== '' ? $supplier : 'Other / Unassigned';
+                    $catalogProductsBySupplier[$supplier] = $catalogProductsBySupplier[$supplier] ?? [];
+                    $catalogProductsBySupplier[$supplier][] = ['value' => $sku, 'label' => $label];
                     if ($supplier !== '') {
                         $rebateSupplierProducts[$supplier] = $rebateSupplierProducts[$supplier] ?? [];
                         $rebateSupplierProducts[$supplier][] = ['value' => $sku, 'label' => $label];
                     }
-                }
-                if ($catalogProducts !== []) {
-                    $rebateSupplierProducts['Current Product Catalog'] = $catalogProducts;
                 }
             ?>
             <section class="transfer-screen">
@@ -5845,6 +5861,7 @@ function onRebateLevelChange() {
     const targetSelect = document.getElementById('modal_rebate_target_select');
     const supplierProducts = <?= json_encode($rebateSupplierProducts ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     const catalogProducts = <?= json_encode($catalogProducts ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const catalogProductsBySupplier = <?= json_encode($catalogProductsBySupplier ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
     targetSelect.replaceChildren();
     if (lvl === 'global') {
@@ -5872,8 +5889,13 @@ function onRebateLevelChange() {
             });
         } else {
             targetSelect.add(new Option('Select product / SKU', ''));
-            catalogProducts.forEach(function (product) {
-                targetSelect.add(new Option(product.label, product.value));
+            Object.keys(catalogProductsBySupplier).sort().forEach(function (supplier) {
+                const group = document.createElement('optgroup');
+                group.label = supplier;
+                (catalogProductsBySupplier[supplier] || []).forEach(function (product) {
+                    group.appendChild(new Option(product.label, product.value));
+                });
+                targetSelect.appendChild(group);
             });
         }
         targetSelect.value = targetInput.value === 'ALL' ? '' : targetInput.value;

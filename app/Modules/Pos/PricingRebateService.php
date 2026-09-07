@@ -1801,7 +1801,7 @@ class PricingRebateService
             self::ensurePricingTables($pdo);
             $stmt = $pdo->prepare(
                 'INSERT INTO rebate_rules (rule_id, company_id, level, target_key, rebate_pct, rebate_base_price, adjustment_factor, formula_type, description, is_active, start_date, end_date, updated_by, updated_at)
-                 VALUES (?, "beverage", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 VALUES (?, "beverage", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE level=VALUES(level), target_key=VALUES(target_key), rebate_pct=VALUES(rebate_pct), rebate_base_price=VALUES(rebate_base_price), adjustment_factor=VALUES(adjustment_factor), formula_type=VALUES(formula_type), description=VALUES(description), is_active=VALUES(is_active), start_date=VALUES(start_date), end_date=VALUES(end_date), updated_by=VALUES(updated_by), updated_at=VALUES(updated_at)'
             );
             $stmt->execute([
