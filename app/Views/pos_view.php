@@ -1632,15 +1632,25 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
             text-transform: uppercase;
             margin-bottom: 0.3rem;
         }
+        .settings-field {
+            min-width: 0;
+        }
         .settings-field input,
-        .settings-field textarea {
+        .settings-field textarea,
+        .settings-field select {
             width: 100%;
+            min-width: 0;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 0.68rem;
             color: #0f172a;
             font-size: 0.9rem;
             background: #ffffff;
+        }
+        .settings-field select {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .settings-field textarea {
             min-height: 92px;
@@ -5153,8 +5163,9 @@ $receiptCopies = [
             </div>
 
             <div style="margin-bottom:1rem">
-                <label style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Target Key / Identifier (e.g. ALL, COCA-COLA, SKU, PROMO-CODE)</label>
+                <label for="modal_rebate_target" style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Target Key / Identifier (e.g. supplier, brand, SKU, or promo code)</label>
                 <input type="text" name="target_key" id="modal_rebate_target" required placeholder="e.g. ALL, COCA-COLA, MEGAPROMO" style="width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem;font-weight:700;text-transform:uppercase">
+                <select id="modal_rebate_target_select" aria-label="Select rebate target" style="display:none;width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem;font-weight:700"></select>
             </div>
 
             <div style="margin-bottom:1rem">
@@ -5786,6 +5797,7 @@ function openAddRebateModal() {
     document.getElementById('modal_rebate_adjustment_factor').value = '100';
     document.getElementById('modal_rebate_formula_type').value = 'standard_pct';
     document.getElementById('modal_rebate_active').checked = true;
+    onRebateLevelChange();
     document.getElementById('rebateRuleModal').style.display = 'flex';
 }
 
@@ -5802,6 +5814,7 @@ function openEditRebateModal(rule) {
     document.getElementById('modal_rebate_start').value = rule.start_date || '<?= date('Y-m-d') ?>';
     document.getElementById('modal_rebate_end').value = rule.end_date || '';
     document.getElementById('modal_rebate_active').checked = !(rule.is_active === false || rule.is_active === 0 || rule.is_active === '0');
+    onRebateLevelChange();
     document.getElementById('rebateRuleModal').style.display = 'flex';
 }
 
@@ -5812,10 +5825,44 @@ function closeRebateModal() {
 function onRebateLevelChange() {
     const lvl = document.getElementById('modal_rebate_level').value;
     const targetInput = document.getElementById('modal_rebate_target');
+    const targetSelect = document.getElementById('modal_rebate_target_select');
+    const supplierProducts = <?= json_encode($rebateSupplierProducts ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+    targetSelect.replaceChildren();
     if (lvl === 'global') {
+        targetInput.style.display = 'block';
+        targetInput.name = 'target_key';
+        targetSelect.style.display = 'none';
         targetInput.value = 'ALL';
         targetInput.readOnly = true;
+    } else if (lvl === 'supplier' || lvl === 'product') {
+        targetInput.style.display = 'none';
+        targetInput.removeAttribute('name');
+        targetInput.readOnly = false;
+        targetSelect.style.display = 'block';
+        targetSelect.name = 'target_key';
+
+        if (lvl === 'supplier') {
+            targetSelect.add(new Option('Select supplier', ''));
+            Object.keys(supplierProducts).sort().forEach(function (supplier) {
+                targetSelect.add(new Option(supplier, supplier));
+            });
+        } else {
+            targetSelect.add(new Option('Select product / SKU', ''));
+            Object.keys(supplierProducts).sort().forEach(function (supplier) {
+                const group = document.createElement('optgroup');
+                group.label = supplier;
+                (supplierProducts[supplier] || []).forEach(function (product) {
+                    group.appendChild(new Option(product.label, product.value));
+                });
+                targetSelect.appendChild(group);
+            });
+        }
+        targetSelect.value = targetInput.value === 'ALL' ? '' : targetInput.value;
     } else {
+        targetInput.style.display = 'block';
+        targetInput.name = 'target_key';
+        targetSelect.style.display = 'none';
         targetInput.readOnly = false;
         if (targetInput.value === 'ALL') targetInput.value = '';
     }
