@@ -4211,6 +4211,19 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                     }
                 }
                 asort($rebateSuppliers, SORT_NATURAL | SORT_FLAG_CASE);
+                $rebateSupplierProducts = [];
+                foreach (is_array($supplierCatalog ?? null) ? $supplierCatalog : [] as $supplierName => $brands) {
+                    $products = [];
+                    foreach (is_array($brands) ? $brands : [] as $brand => $packSizes) {
+                        foreach (is_array($packSizes) ? $packSizes : [] as $packSize) {
+                            $products[] = [
+                                'value' => $brand . ' - ' . $packSize,
+                                'label' => $brand . ' - ' . $packSize,
+                            ];
+                        }
+                    }
+                    $rebateSupplierProducts[$supplierName] = $products;
+                }
             ?>
             <section class="transfer-screen">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
@@ -4308,7 +4321,7 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                             <?= csrf_field() ?>
                             <input type="hidden" name="form_action" value="record_rebate_settlement">
                             <div class="settings-field"><label for="rebateSupplier">Supplier</label><select id="rebateSupplier" name="supplier"><option value="">Select supplier</option><?php foreach ($rebateSuppliers as $supplier): ?><option value="<?= e((string)$supplier) ?>"><?= e((string)$supplier) ?></option><?php endforeach; ?></select></div>
-                            <div class="settings-field"><label>SKU / ALL</label><input type="text" name="sku" placeholder="PEP-PET-60CL-12"></div>
+                            <div class="settings-field"><label for="rebateSku">SKU / ALL</label><select id="rebateSku" name="sku"><option value="ALL">ALL</option></select></div>
                             <div class="settings-field"><label>Period Start</label><input type="date" name="period_start" value="<?= date('Y-m-01') ?>"></div>
                             <div class="settings-field"><label>Period End</label><input type="date" name="period_end" value="<?= date('Y-m-t') ?>"></div>
                             <div class="settings-field"><label>Expected Amount</label><input type="number" step="0.01" min="0" name="expected_amount" placeholder="0.00"></div>
@@ -4318,6 +4331,26 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                             <div class="settings-field"><label>Status</label><select name="status"><option>Expected</option><option selected>Confirmed</option><option>Received</option><option>Disputed</option><option>Reversed</option></select></div>
                             <button type="submit" class="btn-complete-sale" style="height:42px;padding:0 1rem">Record Settlement</button>
                         </form>
+                        <script>
+                            (function () {
+                                const supplierSelect = document.getElementById('rebateSupplier');
+                                const skuSelect = document.getElementById('rebateSku');
+                                const supplierProducts = <?= json_encode($rebateSupplierProducts, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+                                if (!supplierSelect || !skuSelect) {
+                                    return;
+                                }
+
+                                supplierSelect.addEventListener('change', function () {
+                                    const supplier = supplierSelect.value;
+                                    const products = supplierProducts[supplier] || [];
+                                    skuSelect.replaceChildren(new Option('ALL', 'ALL'));
+                                    products.forEach(function (product) {
+                                        skuSelect.add(new Option(product.label, product.value));
+                                    });
+                                });
+                            }());
+                        </script>
                     <?php endif; ?>
                     <?php if (!empty($rebateSettlements)): ?>
                         <div style="overflow:auto">

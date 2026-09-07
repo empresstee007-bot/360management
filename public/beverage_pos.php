@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/bootstrap.php';
 require_once __DIR__ . '/../app/Core/Database.php';
 require_once __DIR__ . '/../app/layout.php';
+require_once __DIR__ . '/../app/Config/suppliers.php';
 require_once __DIR__ . '/../app/Modules/Pos/PosService.php';
 require_once __DIR__ . '/../app/Modules/BeverageWarehouse/BeverageWarehouseService.php';
 require_once __DIR__ . '/../app/Modules/HrPayroll/HrPayrollService.php';
@@ -12,6 +13,8 @@ require_once __DIR__ . '/../app/Modules/HrPayroll/HrPayrollService.php';
 use App\Modules\Pos\PosService;
 use App\Modules\BeverageWarehouse\BeverageWarehouseService;
 use App\Modules\HrPayroll\HrPayrollService;
+
+$supplierCatalog = require __DIR__ . '/../app/Config/suppliers.php';
 
 $user = current_user();
 if (!$user) {
@@ -278,6 +281,9 @@ if ($activeTab === 'pricing-audit') {
 
 if ($activeTab === 'rebates') {
     $rebateSuppliers = [];
+    foreach (array_keys(is_array($supplierCatalog) ? $supplierCatalog : []) as $supplier) {
+        $rebateSuppliers[strtoupper($supplier)] = $supplier;
+    }
     try {
         foreach (BeverageWarehouseService::getProducts() as $product) {
             $supplier = trim((string)($product['supplier'] ?? ''));

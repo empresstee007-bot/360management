@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'Nigerian Bottling Company (NBC)' => [
+        'Coca-Cola' => ['35cl glass', '35cl PET', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '2L PET', '33cl can'],
+        'Coca-Cola Zero Sugar' => ['35cl PET', '50cl PET', '33cl can'],
+        'Fanta Orange' => ['35cl glass', '35cl PET', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '2L PET', '33cl can'],
+        'Fanta Apple' => ['35cl PET', '50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Sprite' => ['35cl glass', '35cl PET', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '2L PET', '33cl can'],
+        'Schweppes' => ['33cl can', '50cl PET', '1L PET'],
+        'Eva Water' => ['50cl PET', '75cl PET', '1.5L PET', '2L PET', '5L PET'],
+        'Five Alive' => ['35cl', '85cl', '1L', '1.5L'],
+        'Five Alive Pulpy Orange' => ['35cl', '85cl', '1L'],
+        'Monster Energy' => ['33cl can', '500ml can'],
+        'Predator Energy' => ['330ml can', '500ml PET/can'],
+    ],
+    'Seven-Up Bottling Company' => [
+        '7UP' => ['35cl glass', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '2L PET', '33cl can'],
+        'Pepsi' => ['35cl glass', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '2L PET', '33cl can'],
+        'Pepsi Max / Pepsi Zero' => ['33cl can', '50cl PET'],
+        'Mirinda Orange' => ['35cl glass', '50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Mountain Dew' => ['35cl glass', '50cl PET', '60cl PET', '1L PET', '1.5L PET', '33cl can'],
+        'Teem' => ['50cl PET', '1L PET', '1.5L PET'],
+        'H2OH!' => ['500ml', '1L'],
+        'Aquafina Water' => ['50cl PET', '75cl PET', '1.5L PET', '5L PET'],
+        'Lipton Ice Tea' => ['33cl can/bottle'],
+        'Supa Komando' => ['33cl can', '50cl PET'],
+    ],
+    'Rite Foods Limited' => [
+        'Bigi Cola' => ['50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Bigi Orange' => ['50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Bigi Apple' => ['50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Bigi Lemon-Lime' => ['50cl PET', '60cl PET', '1L PET', '1.5L PET'],
+        'Bigi Chapman' => ['50cl PET', '60cl PET'],
+        'Bigi Tropical' => ['50cl PET', '60cl PET'],
+        'Bigi Soda' => ['50cl PET', '1L PET'],
+        'Bigi Premium Water' => ['50cl PET', '75cl PET', '1.5L PET'],
+        'Fearless Classic' => ['33cl can', '50cl PET'],
+        'Fearless Red Berry' => ['33cl can', '50cl PET'],
+        'Fearless Black' => ['33cl can', '50cl PET'],
+        'Sosa Orange' => ['35cl', '1L'],
+        'Sosa Apple' => ['35cl', '1L'],
+        'Sosa Cranberry' => ['35cl', '1L'],
+        'Sosa Mixed Berry' => ['35cl', '1L'],
+        'Sosa Orange, Passion & Mango' => ['35cl', '1L'],
+    ],
+    'Planet Bottling Company' => [
+        'Planet Cola' => ['PET bottle', 'can'],
+        'Planet Orange' => ['PET bottle'],
+        'Planet Lemon-Lime' => ['PET bottle'],
+        'Planet Energy Drink' => ['can', 'PET'],
+        'Planet Water' => ['50cl PET', '75cl PET', '1.5L PET'],
+    ],
+    'AJE Group Nigeria / The BIG Bottling Company' => [
+        'Cielo Orange Antioxidant Drink' => ['740ml PET bottle'],
+        'Cielo Apple Antioxidant Drink' => ['740ml PET bottle'],
+        'Cielo Lemon-Lime Antioxidant Drink' => ['740ml PET bottle'],
+        'BIG Cola' => ['660ml PET', 'Other local pack sizes'],
+        'Cifrut' => ['Orange', 'Apple', 'Mixed fruit', '500ml PET', 'Other local pack sizes'],
+    ],
+];
