@@ -716,6 +716,12 @@ class PricingRebateService
         }
 
         $targetKey = strtoupper(trim((string)($data['target_key'] ?? 'ALL')));
+        if (in_array($level, ['supplier', 'product', 'brand', 'promotion'], true) && $targetKey === '') {
+            return [
+                'success' => false,
+                'message' => 'Select or enter a target before saving this rebate rule.',
+            ];
+        }
         $rebatePct = max(0.0, min(100.0, (float)($data['rebate_pct'] ?? 0.0)));
         $rebateBasePrice = max(0.0, (float)($data['rebate_base_price'] ?? 0.0));
         $adjustmentFactor = max(0.0, min(100.0, (float)($data['adjustment_factor'] ?? 100.0)));

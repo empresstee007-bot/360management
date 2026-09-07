@@ -5197,8 +5197,8 @@ $receiptCopies = [
 
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1rem">
                 <div>
-                    <label style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Rebate Base Price (₦)</label>
-                    <input type="number" name="rebate_base_price" id="modal_rebate_base_price" step="0.01" min="0" placeholder="Optional" style="width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem">
+                    <label style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Rebate Base Price (₦) <small style="font-weight:600;color:#64748b;text-transform:none">optional</small></label>
+                    <input type="number" name="rebate_base_price" id="modal_rebate_base_price" step="0.01" min="0" placeholder="Leave blank if unavailable" style="width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem">
                 </div>
                 <div>
                     <label style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Adjustment Factor %</label>
@@ -5844,6 +5844,7 @@ function onRebateLevelChange() {
     const targetInput = document.getElementById('modal_rebate_target');
     const targetSelect = document.getElementById('modal_rebate_target_select');
     const supplierProducts = <?= json_encode($rebateSupplierProducts ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    const catalogProducts = <?= json_encode($catalogProducts ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
     targetSelect.replaceChildren();
     if (lvl === 'global') {
@@ -5871,13 +5872,8 @@ function onRebateLevelChange() {
             });
         } else {
             targetSelect.add(new Option('Select product / SKU', ''));
-            Object.keys(supplierProducts).sort().forEach(function (supplier) {
-                const group = document.createElement('optgroup');
-                group.label = supplier;
-                (supplierProducts[supplier] || []).forEach(function (product) {
-                    group.appendChild(new Option(product.label, product.value));
-                });
-                targetSelect.appendChild(group);
+            catalogProducts.forEach(function (product) {
+                targetSelect.add(new Option(product.label, product.value));
             });
         }
         targetSelect.value = targetInput.value === 'ALL' ? '' : targetInput.value;
