@@ -1,0 +1,166 @@
+Your job is to inspect the existing Empress Tee Beverage Depot project and carefully ADD the requirements below into the current application. Preserve all existing working functionality, design language, routes, APIs, database relationships, user roles, inventory records, customers, suppliers, sales, purchases, reports and integrations.
+
+Before writing code, inspect the existing codebase and database to identify the current Product/SKU, Inventory, Purchase, Sales/POS, Customer, Supplier, Warehouse, Settings, User/Role, Reporting and Audit structures. Reuse and extend them. Create new tables/fields/services only where the existing architecture cannot safely support the new business rules.
+
+Do not rename or delete existing fields/tables/routes just to fit this specification. Use backward-compatible migrations. Existing historical transactions must remain valid.
+1. Upgrade Goal
+Add Seven-Up beverage distributorship/depot operational logic to the existing system: pallet and truck loading, mixed loads, depot versus diversion sales, SKU-specific prices, quantity pricing, rebates/slabs, promotions, effective landing cost and true profitability.
+2. Existing Modules to Extend
+•	Existing Product/SKU master — add packaging, pallet and commercial-rule fields without duplicating products.
+•	Existing Inventory/Warehouse — add pallet/truck awareness while retaining current stock quantities and movements.
+•	Existing Purchasing/Stock Receipt — capture invoice cost, rebate base and applicable supplier promotion.
+•	Existing POS/Sales — add Depot Sale and Diversion Sale pricing modes.
+•	Existing Customers — support customer/distributor classification and applicable price rules.
+•	Existing Settings — add editable pricing, rebate, promotion, pallet and truck configuration.
+•	Existing Reports — add effective cost, rebate, diversion and profitability reporting.
+•	Existing RBAC/Audit — reuse permissions and audit mechanisms; add permissions only where required.
+3. Truck and Pallet Business Logic
+Default full truck capacity: 12 pallets. This must be configurable, not hard-coded.
+Product/Format	Inventory Unit	Qty per Pallet	Known Rule
+50CL / 60CL PET	Pack/Case	154	12 full pallets = 1,848 packs
+30CL PET	Pack/Case	224	Per pallet
+Teem Bitter Lemon 50CL/60CL	Pack/Case	154	Per pallet
+Super Commando 50CL PET	Pack/Case	154	Per pallet
+RGB 50CL	Crate	40	Returnable glass bottle
+RGB 30CL	Crate	48	Returnable glass bottle
+A full truck must be calculated from its pallet composition. Never assume every truck contains 1,848 packs. If all 12 pallets contain a 154-pack SKU, total = 1,848. If products/sizes are mixed, calculate each pallet separately and sum the actual packs/crates.
+4. Add a Truck Load / Pallet Allocation Layer
+•	Use the existing stock/inventory records as the source of truth.
+•	Allow a truck/load record to contain up to the configured pallet capacity (default 12).
+•	Each pallet position should record SKU, packaging type, packs/crates per pallet, number of pallets, actual loaded quantity and source warehouse.
+•	Support mixed SKU loads.
+•	Show total pallets, total packs, total crates and value by SKU.
+•	Do not double-deduct inventory. Integrate truck loading with the existing stock movement mechanism.
+•	Support partial pallets only if existing business permissions/settings allow it; otherwise validate full pallet quantities.
+5. Sales Types — Extend Existing POS/Sales
+Add a Sales Type / Pricing Channel field to the existing sales workflow. At minimum support DEPOT SALE and DIVERSION SALE. Do not create a second POS unless the current architecture absolutely requires it.
+SKU / Example	Depot	Diversion	Notes
+PET 60CL	₦4,100	₦4,050	Current period. Diversion must not go below ₦4,050 without authorized override.
+Super Commando 35CL PET	Quantity/product-specific	₦2,750	Current diversion example.
+Super Commando 50CL PET	Quantity/product-specific	₦3,930	Current diversion example.
+Pepsi/Mirinda/7UP RGB 50CL	Quantity-tiered	₦4,920	Current diversion price after promo calculation/rounding.
+These prices are NOT permanent constants. Store them as versioned price rules with effective dates because Seven-Up promotions, commissions and rebates change.
+6. Depot Pricing
+Depot/warehouse customers may buy smaller quantities such as 5 or 10 packs. Depot price differs by SKU and can also differ by quantity. Extend the current pricing mechanism to support quantity tiers: SKU, sales channel, minimum quantity, maximum quantity, price, customer class, depot/location, effective date, expiry date and status.
+7. Diversion Pricing
+Diversion means selling/diverting stock to another distributor. The receiving distributor must be captured on the existing customer/distributor record. Use the active diversion price for the SKU and date. Allow management to configure a minimum diversion threshold. Any transaction below it requires permission, approval/reason and audit history.
+8. Rebate / Slab Engine
+Extend cost calculation so Invoice Price is not treated as the only cost. The system must calculate an Effective Landing Cost using the supplier rebate/slab rules.
+PET 60CL working example:
+•	Invoice Price: ₦4,150.00
+•	Rebate Base Price: ₦4,207.07
+•	Example slabs: 3%, 2.5%, 2%
+•	Adjustment factor used in supplied example: 92.5%
+Rebate Value = Rebate Base Price × Slab % × Adjustment Factor
+Effective Landing Cost = Invoice Price − Rebate Value
+Slab	Approx. Rebate	Effective Landing	Depot @ ₦4,100	Diversion @ ₦4,050
+3%	₦116.75	₦4,033.25	+₦66.75	+₦16.75
+2.5%	₦97.29	₦4,052.71	+₦47.29	−₦2.71
+2%	₦77.83	₦4,072.17	+₦27.83	−₦22.17
+IMPORTANT: Make the rebate percentage, rebate base, adjustment factor, formula type and effective dates configurable. Do not permanently call the 92.5% factor 'VAT' until management/accounting confirms its exact treatment.
+9. RGB 50CL Promotion Handling
+The discussed RGB 50CL example has an invoice price around ₦5,150 and a ₦120,000 promotion, with VAT-related adjustment, producing an effective figure around ₦4,919 and a rounded diversion selling price of ₦4,920. The exact allocation basis of the ₦120,000 promotion still needs confirmation. Therefore build the promotion engine generically rather than hard-coding this example.
+•	Promotion name/code and supplier
+•	Eligible SKU(s)
+•	Qualifying quantity, pallets, truck or invoice basis
+•	Promotion amount or percentage
+•	VAT/tax treatment or adjustment factor
+•	Allocation method
+•	Start/end date
+•	Eligible sales channel/customer type
+•	Calculated benefit per pack/crate
+•	Approval/status
+10. Existing 5+1 / Ratio Promotion Requirement
+Keep supplier rebates separate from quantity/promotional schemes. The existing business requirement includes configurable arrangements such as 5+1, 1-4, 1-1 and 1-10. Extend the current promotion module if one exists. A rule must support qualifying SKU, qualifying quantity, reward quantity/value, same/different reward SKU, channel/customer eligibility and effective dates.
+11. Product/SKU Fields to Add Only Where Missing
+•	Packaging type: PET/RGB/etc.
+•	Inventory selling unit: pack/case/crate
+•	Packs/crates per pallet
+•	Invoice/reference cost
+•	Rebate base price
+•	Current/expected rebate scheme
+•	Effective landing cost
+•	Depot price rules
+•	Diversion price rules
+•	Minimum permitted selling price
+•	Promotion eligibility
+•	RGB returnable crate/bottle/deposit configuration where required
+12. POS Calculation and User Experience
+•	When a product is selected, retrieve the active rule for the transaction date, sales type, quantity, customer and location.
+•	Automatically suggest the correct Depot or Diversion selling price.
+•	Show Invoice Cost, Expected Rebate, Effective Landing Cost and Effective Margin to authorized users.
+•	Do not show a false 'loss' warning merely because selling price is below invoice price.
+•	Warn when selling price is below Effective Landing Cost and/or management's minimum threshold.
+•	Allow authorized override only with reason and audit record.
+•	Normal cashier experience should remain simple; detailed commercial calculations can be restricted to managers/admins.
+13. Profitability
+•	Invoice Margin = Selling Price − Invoice Price
+•	Expected Rebate Benefit = rebate/slab allocation
+•	Promotion Benefit = qualifying promotion allocation
+•	Effective Product Margin = Selling Price − Effective Landing Cost
+•	Operational/Net Margin = Effective Product Margin − configured direct costs, if the current finance model supports this
+Management must be able to distinguish 'below invoice but profitable after rebate' from a genuine sale below effective cost.
+14. Database and Migration Requirements
+•	Inspect current schema before designing migrations.
+•	Prefer adding nullable/defaulted columns and related rule tables over replacing existing structures.
+•	Use backward-compatible migrations and preserve all existing data.
+•	Never recalculate historical transactions using today's price/rebate rules.
+•	Snapshot the applicable price, cost, rebate and promotion values on each finalized transaction.
+•	Use decimal/money-safe database types; do not use floating-point for currency.
+•	Add indexes/constraints appropriate to SKU, effective dates, sales channel and customer/location.
+•	Provide rollback-safe migrations where the project framework supports them.
+15. API / Backend Integration
+•	Extend existing endpoints/services instead of duplicating business logic.
+•	Centralize price resolution and profitability calculation in a backend pricing service/domain layer.
+•	POS UI, invoices, reports and APIs must all use the same calculation source.
+•	Validate prices server-side; never trust only frontend calculations.
+•	Preserve existing API contracts where possible. If fields are added, make changes backward compatible.
+16. Permissions and Audit
+•	Reuse current RBAC system.
+•	Add permissions for price-rule management, rebate/promotion management, diversion approval and below-threshold overrides as needed.
+•	Audit old value, new value, user, approver, reason and timestamp for commercial-rule changes.
+•	Audit price overrides and diversion transactions.
+17. Reports to Extend
+•	Depot sales vs diversion sales
+•	Sales and margin by SKU/customer/distributor
+•	Truck/pallet load report
+•	Invoice cost vs effective landing cost
+•	Expected rebate vs confirmed/received rebate
+•	Sales below invoice but above effective cost
+•	True loss-making transactions
+•	Promotion utilization
+•	Price override report
+•	Historical price/rebate/promotion audit
+18. Required Implementation Sequence
+1. Audit the existing codebase/database and map the current modules to these requirements.
+2. Produce a short impact map identifying which existing files/tables/services/screens will be extended.
+3. Back up the database and create backward-compatible migrations.
+4. Implement configuration/master-data additions.
+5. Implement one centralized pricing/rebate/promotion calculation service.
+6. Integrate it into the existing POS and sales flow.
+7. Add diversion workflow and pallet/truck load extensions.
+8. Extend reports and audit logs.
+9. Run regression tests on all existing sales/inventory/purchase functionality.
+10. Run the business acceptance tests below before deployment.
+19. Acceptance Tests
+•	154 packs × 12 pallets must produce 1,848 packs for a full single-SKU load.
+•	A mixed 12-pallet load must calculate each SKU using its own packs/crates-per-pallet value.
+•	PET 60CL Depot must resolve to the active depot price (currently ₦4,100 where applicable).
+•	PET 60CL Diversion must resolve to the active diversion price (currently ₦4,050) and block/approve prices below the configured threshold.
+•	Changing next month's price must not alter an old completed invoice.
+•	At the discussed 3% PET 60CL example, effective landing should be approximately ₦4,033.25 and diversion contribution at ₦4,050 approximately ₦16.75.
+•	At 2.5% or 2%, the system must correctly show when ₦4,050 becomes break-even/negative after the configured rebate calculation.
+•	Existing non-Seven-Up products and existing POS transactions must continue working normally.
+•	Inventory must be deducted once only when a truck/diversion transaction is finalized.
+•	Unauthorized users cannot change commercial rules or override minimum selling prices.
+20. Do Not Guess These Outstanding Rules
+•	Exact depot quantity tiers/prices for each SKU.
+•	Exact basis for allocating the ₦120,000 RGB promotion.
+•	Confirmed accounting meaning of the 92.5% factor.
+•	Complete SKU/pallet master list.
+•	Whether mixed products can share one pallet or only whole pallets are mixed at truck level.
+•	Rebate earning/confirmation/reversal process.
+•	Final 5+1 / 1-4 / 1-1 / 1-10 qualification details.
+If any of these are needed to complete a specific calculation, expose them as configurable settings and flag them for management confirmation rather than inventing a business rule.
+FINAL DEVELOPER DIRECTIVE
+DO NOT rebuild Empress Tee. Upgrade the existing application in place. First understand what is already implemented, then integrate these rules into the current architecture with the smallest safe set of changes. The finished system must preserve today's working features while making the real depot/distributorship operation possible: configurable SKU pallet quantities, 12-pallet/mixed truck loads, depot and diversion pricing, quantity tiers, changing promotions/rebates, effective landing cost, true margin, approvals and complete audit history.

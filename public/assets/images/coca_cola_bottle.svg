@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 400" width="100%" height="100%">
+    <defs>
+        <linearGradient id="colaLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2b0505"/>
+            <stop offset="35%" stop-color="#5c0d0d"/>
+            <stop offset="65%" stop-color="#8a1818"/>
+            <stop offset="100%" stop-color="#1f0303"/>
+        </linearGradient>
+        <linearGradient id="redLabel" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c9182b"/>
+            <stop offset="50%" stop-color="#f01d32"/>
+            <stop offset="100%" stop-color="#9e0c1b"/>
+        </linearGradient>
+        <linearGradient id="redCap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f01d32"/>
+            <stop offset="100%" stop-color="#800a15"/>
+        </linearGradient>
+        <linearGradient id="glassGloss" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+            <stop offset="25%" stop-color="#ffffff" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+        </linearGradient>
+    </defs>
+    <rect width="200" height="400" fill="none"/>
+    <rect x="76" y="25" width="48" height="26" fill="url(#redCap)" rx="5"/>
+    <line x1="80" y1="32" x2="80" y2="45" stroke="#ffffff" stroke-width="2" opacity="0.4"/>
+    <line x1="86" y1="32" x2="86" y2="45" stroke="#ffffff" stroke-width="2" opacity="0.4"/>
+    <line x1="92" y1="32" x2="92" y2="45" stroke="#ffffff" stroke-width="2" opacity="0.4"/>
+    <line x1="108" y1="32" x2="108" y2="45" stroke="#ffffff" stroke-width="2" opacity="0.4"/>
+    <rect x="80" y="51" width="40" height="12" fill="#e2e8f0" opacity="0.8" rx="2"/>
+    <path d="M 82 63 L 118 63 Q 138 90 148 130 L 148 140 Q 148 150 144 230 L 144 330 Q 144 370 135 380 L 65 380 Q 56 370 56 330 L 56 230 Q 52 150 52 140 Q 52 90 72 63 Z" fill="url(#colaLiquid)"/>
+    <path d="M 52 145 L 148 145 L 146 230 L 54 230 Z" fill="url(#redLabel)"/>
+    <g transform="translate(56, 160)">
+        <text x="44" y="38" fill="#ffffff" font-family="'Brush Script MT', 'Outfit', 'Georgia', cursive" font-size="34" font-weight="bold" font-style="italic" text-anchor="middle" letter-spacing="-1">Coca-Cola</text>
+        <path d="M 2 42 C 22 52, 52 54, 86 42 C 60 50, 26 50, 8 42 Z" fill="#ffffff"/>
+    </g>
+    <path d="M 58 245 Q 70 260 70 280 Q 70 300 58 315" fill="none" stroke="#8a1818" stroke-width="3" opacity="0.6"/>
+    <path d="M 142 245 Q 130 260 130 280 Q 130 300 142 315" fill="none" stroke="#8a1818" stroke-width="3" opacity="0.6"/>
+    <path d="M 60 75 Q 70 100 72 135 L 72 360 Q 64 360 62 330 L 62 140 Z" fill="url(#glassGloss)"/>
+</svg>

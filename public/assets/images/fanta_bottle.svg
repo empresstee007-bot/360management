@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 400" width="100%" height="100%">
+    <defs>
+        <linearGradient id="fantaLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ea580c"/>
+            <stop offset="40%" stop-color="#f97316"/>
+            <stop offset="70%" stop-color="#fb923c"/>
+            <stop offset="100%" stop-color="#c2410c"/>
+        </linearGradient>
+        <linearGradient id="blueCap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#2563eb"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+        </linearGradient>
+        <linearGradient id="fantaLabelBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e3a8a"/>
+            <stop offset="100%" stop-color="#1e40af"/>
+        </linearGradient>
+    </defs>
+    <rect width="200" height="400" fill="none"/>
+    <rect x="78" y="22" width="44" height="26" fill="url(#blueCap)" rx="4"/>
+    <line x1="84" y1="28" x2="84" y2="42" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="92" y1="28" x2="92" y2="42" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="100" y1="28" x2="100" y2="42" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <path d="M 82 48 L 118 48 L 126 80 L 74 80 Z" fill="#fff7ed" opacity="0.5"/>
+    <path d="M 74 80 L 126 80 Q 148 110 152 160 Q 135 210 148 260 L 146 340 Q 146 375 135 382 L 65 382 Q 54 375 54 340 L 52 260 Q 65 210 48 160 Q 52 110 74 80 Z" fill="url(#fantaLiquid)"/>
+    <g transform="translate(45, 200)">
+        <ellipse cx="55" cy="30" rx="46" ry="28" fill="#ffffff"/>
+        <path d="M 12 18 L 98 10 L 94 48 L 16 48 Z" fill="url(#fantaLabelBg)" rx="4"/>
+        <text x="54" y="38" fill="#ffffff" font-family="Outfit, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="1">FANTA</text>
+        <path d="M 24 14 Q 40 2 54 18 Q 36 22 24 14 Z" fill="#16a34a"/>
+        <circle cx="85" cy="40" r="12" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+    </g>
+    <path d="M 60 90 Q 68 120 62 160 Q 72 210 60 260 L 60 360" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.3"/>
+</svg>

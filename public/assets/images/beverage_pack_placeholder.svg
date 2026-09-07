@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-labelledby="title">
+  <title id="title">Beverage product placeholder</title>
+  <rect width="240" height="180" rx="18" fill="#f8fafc"/>
+  <rect x="38" y="58" width="164" height="78" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <g fill="#7f1230">
+    <rect x="58" y="38" width="28" height="98" rx="9"/>
+    <rect x="106" y="38" width="28" height="98" rx="9"/>
+    <rect x="154" y="38" width="28" height="98" rx="9"/>
+  </g>
+  <g fill="#fb923c">
+    <rect x="62" y="30" width="20" height="16" rx="5"/>
+    <rect x="110" y="30" width="20" height="16" rx="5"/>
+    <rect x="158" y="30" width="20" height="16" rx="5"/>
+  </g>
+  <path d="M48 88h144" stroke="#e2e8f0" stroke-width="4"/>
+  <text x="120" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="800" fill="#475569">BEVERAGE</text>
+</svg>

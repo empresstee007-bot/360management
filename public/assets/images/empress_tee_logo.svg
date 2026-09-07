@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Empress Tee Ejire Store Beverage Depot</title>
+  <desc id="desc">Orange crown above purple and orange Empress Tee Beverage Depot logo.</desc>
+  <defs>
+    <linearGradient id="purple" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#4b008c"/>
+      <stop offset="1" stop-color="#25004d"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff8a00"/>
+      <stop offset="1" stop-color="#f25a00"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0 40)">
+    <g fill="url(#orange)" transform="translate(0 10)">
+      <path d="M375 310 455 160c54 102 131 106 174-18l66 151c34-68 80-84 137-141l-53 176c-119-35-243-42-404-18Z"/>
+      <path d="M385 334c120-36 270-41 405 0-141-18-270-18-405 0Z"/>
+      <circle cx="382" cy="172" r="18"/>
+      <circle cx="455" cy="140" r="18"/>
+      <circle cx="600" cy="92" r="22"/>
+      <circle cx="733" cy="140" r="18"/>
+      <circle cx="812" cy="172" r="18"/>
+    </g>
+    <text x="600" y="555" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="190" font-weight="900" fill="url(#purple)" letter-spacing="-6">EMPRESS</text>
+    <g fill="url(#purple)">
+      <path d="M125 615h215v28H155Z"/>
+      <path d="M175 672h165v28H205Z" fill="url(#orange)"/>
+      <path d="M222 725h118v28H247Z"/>
+      <path d="M860 615h215l-30 28H860Z"/>
+      <path d="M860 672h165l-30 28H860Z" fill="url(#orange)"/>
+      <path d="M860 725h118l-25 28H860Z"/>
+    </g>
+    <text x="600" y="755" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="190" font-weight="900" fill="url(#orange)" letter-spacing="-3">TEE</text>
+    <text x="600" y="850" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="78" font-weight="900" fill="url(#purple)" letter-spacing="36">EJIRE STORE</text>
+    <line x1="130" y1="818" x2="225" y2="818" stroke="#f25a00" stroke-width="8" stroke-linecap="round"/>
+    <line x1="975" y1="818" x2="1070" y2="818" stroke="#f25a00" stroke-width="8" stroke-linecap="round"/>
+    <rect x="125" y="910" width="950" height="92" rx="42" fill="url(#purple)" stroke="#f25a00" stroke-width="8"/>
+    <circle cx="188" cy="956" r="12" fill="#ff8a00"/>
+    <circle cx="1012" cy="956" r="12" fill="#ff8a00"/>
+    <text x="600" y="981" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="52" font-weight="900" fill="#ffffff" letter-spacing="28">BEVERAGE DEPOT</text>
+  </g>
+</svg>

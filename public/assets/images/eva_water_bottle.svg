@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 400" width="100%" height="100%">
+    <defs>
+        <!-- Pure Water Liquid Gradient -->
+        <linearGradient id="pureWater" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f0f9ff"/>
+            <stop offset="35%" stop-color="#e0f2fe"/>
+            <stop offset="70%" stop-color="#bae6fd"/>
+            <stop offset="100%" stop-color="#7dd3fc"/>
+        </linearGradient>
+        <!-- Blue Screw Cap Gradient -->
+        <linearGradient id="evaBlueCap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#0284c7"/>
+            <stop offset="100%" stop-color="#0369a1"/>
+        </linearGradient>
+        <!-- Blue Eva Label Gradient -->
+        <linearGradient id="evaLabelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0284c7"/>
+            <stop offset="50%" stop-color="#0369a1"/>
+            <stop offset="100%" stop-color="#075985"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="200" height="400" fill="none"/>
+
+    <!-- Bright Blue Screw Cap -->
+    <rect x="76" y="24" width="48" height="26" fill="url(#evaBlueCap)" rx="4"/>
+    <line x1="82" y1="30" x2="82" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="90" y1="30" x2="90" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="98" y1="30" x2="98" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="106" y1="30" x2="106" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+
+    <!-- Clear Neck Level -->
+    <path d="M 82 50 L 118 50 L 126 80 L 74 80 Z" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Clear Water Bottle Body -->
+    <path d="M 74 80 L 126 80 Q 148 110 148 150 L 148 330 Q 148 375 135 382 L 65 382 Q 52 375 52 330 L 52 150 Q 52 110 74 80 Z" fill="url(#pureWater)"/>
+
+    <!-- Bright Blue Eva Water Label -->
+    <path d="M 52 140 L 148 140 L 148 215 L 52 215 Z" fill="url(#evaLabelGrad)"/>
+
+    <!-- White Oval with "eva." Logo text -->
+    <g transform="translate(52, 145)">
+        <!-- White Oval Backdrop -->
+        <ellipse cx="48" cy="35" rx="36" ry="24" fill="#ffffff"/>
+        <text x="44" y="44" fill="#0369a1" font-family="'Outfit', Arial, sans-serif" font-size="28" font-weight="900" text-anchor="middle" letter-spacing="-1">eva.</text>
+        <circle cx="68" cy="40" r="3" fill="#0284c7"/>
+    </g>
+
+    <!-- Water Water Droplets & Rib Texture -->
+    <path d="M 60 235 Q 70 245 70 260 Q 70 275 60 285" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.5"/>
+    <path d="M 140 235 Q 130 245 130 260 Q 130 275 140 285" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.5"/>
+
+    <!-- Reflection Highlight -->
+    <path d="M 60 85 Q 68 115 68 150 L 68 360" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.7"/>
+</svg>

@@ -1,0 +1,4 @@
+Database credentials removed.
+
+Configure DB_HOST, DB_NAME, DB_USER, and DB_PASS through the deployment environment
+or a local .env file that is excluded from version control.

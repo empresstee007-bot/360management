@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="100%" height="100%">
+    <defs>
+        <linearGradient id="whBg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#0b1329"/>
+            <stop offset="40%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
+        </linearGradient>
+        <linearGradient id="floorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#334155"/>
+            <stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient>
+    </defs>
+    
+    <!-- Background & Floor -->
+    <rect width="600" height="240" fill="url(#whBg)"/>
+    <polygon points="0,150 600,150 600,240 0,240" fill="url(#floorGrad)"/>
+    <line x1="300" y1="150" x2="300" y2="240" stroke="#f59e0b" stroke-dasharray="6,6" stroke-width="2"/>
+
+    <!-- Ceiling Lights -->
+    <ellipse cx="150" cy="10" rx="40" ry="6" fill="#fef08a" opacity="0.6"/>
+    <ellipse cx="300" cy="10" rx="40" ry="6" fill="#fef08a" opacity="0.6"/>
+    <ellipse cx="450" cy="10" rx="40" ry="6" fill="#fef08a" opacity="0.6"/>
+    <polygon points="110,10 190,10 220,150 80,150" fill="#ffffff" opacity="0.04"/>
+    <polygon points="260,10 340,10 370,150 230,150" fill="#ffffff" opacity="0.04"/>
+    <polygon points="410,10 490,10 520,150 380,150" fill="#ffffff" opacity="0.04"/>
+
+    <!-- Left Racks - Stacked Red Coca-Cola & Orange Fanta Crates -->
+    <g transform="translate(20, 20)">
+        <rect x="0" y="0" width="120" height="130" fill="none" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="45" x2="120" y2="45" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="90" x2="120" y2="90" stroke="#64748b" stroke-width="3"/>
+        <!-- Crates Level 1 -->
+        <rect x="5" y="5" width="110" height="35" fill="#dc2626" rx="3"/>
+        <text x="25" y="27" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">COCA-COLA</text>
+        <!-- Crates Level 2 -->
+        <rect x="5" y="50" width="110" height="35" fill="#ea580c" rx="3"/>
+        <text x="38" y="72" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">FANTA</text>
+        <!-- Crates Level 3 -->
+        <rect x="5" y="95" width="110" height="30" fill="#dc2626" rx="3"/>
+    </g>
+
+    <!-- Center Racks - Stacked Green Sprite & Blue Eva Water Crates -->
+    <g transform="translate(160, 20)">
+        <rect x="0" y="0" width="120" height="130" fill="none" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="45" x2="120" y2="45" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="90" x2="120" y2="90" stroke="#64748b" stroke-width="3"/>
+        <!-- Crates Level 1 -->
+        <rect x="5" y="5" width="110" height="35" fill="#16a34a" rx="3"/>
+        <text x="35" y="27" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">SPRITE</text>
+        <!-- Crates Level 2 -->
+        <rect x="5" y="50" width="110" height="35" fill="#0284c7" rx="3"/>
+        <text x="22" y="72" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">EVA WATER</text>
+        <!-- Crates Level 3 -->
+        <rect x="5" y="95" width="110" height="30" fill="#16a34a" rx="3"/>
+    </g>
+
+    <!-- Right Racks - Maltina & Guiness Crates -->
+    <g transform="translate(300, 20)">
+        <rect x="0" y="0" width="120" height="130" fill="none" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="45" x2="120" y2="45" stroke="#64748b" stroke-width="3"/>
+        <line x1="0" y1="90" x2="120" y2="90" stroke="#64748b" stroke-width="3"/>
+        <rect x="5" y="5" width="110" height="35" fill="#78350f" rx="3"/>
+        <text x="30" y="27" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">MALTINA</text>
+        <rect x="5" y="50" width="110" height="35" fill="#1e293b" rx="3"/>
+        <text x="25" y="72" fill="#fff" font-family="Inter" font-size="11" font-weight="bold">GUINNESS</text>
+        <rect x="5" y="95" width="110" height="30" fill="#78350f" rx="3"/>
+    </g>
+
+    <!-- Forklift Vehicle Graphic -->
+    <g transform="translate(450, 140)">
+        <rect x="20" y="20" width="80" height="40" fill="#f59e0b" rx="6"/>
+        <rect x="65" y="0" width="30" height="30" fill="#1e293b" rx="2"/>
+        <circle cx="35" cy="60" r="14" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+        <circle cx="85" cy="60" r="14" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+        <path d="M 0 10 L 20 10 L 20 60 L 0 60 Z" fill="#94a3b8"/>
+        <!-- Pallet on Forklift -->
+        <rect x="-20" y="30" width="22" height="25" fill="#dc2626" rx="2"/>
+    </g>
+
+    <!-- Depot Overlay Badge -->
+    <rect x="0" y="180" width="600" height="60" fill="rgba(15, 23, 42, 0.9)"/>
+    <text x="20" y="205" fill="#ffffff" font-family="Outfit, sans-serif" font-size="16" font-weight="bold">Central Beverage Depot Store A</text>
+    <text x="20" y="225" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12">Location: Lekki Wholesale Hub • Space Used: 85%</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 262" width="100%" height="100%">
+    <defs>
+        <linearGradient id="cokeRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f21b2a"/>
+            <stop offset="60%" stop-color="#d90429"/>
+            <stop offset="100%" stop-color="#800f2f"/>
+        </linearGradient>
+        <linearGradient id="goldButton" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+        </linearGradient>
+        <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
+        </filter>
+    </defs>
+    
+    <!-- Red Brand Background -->
+    <rect width="500" height="262" fill="url(#cokeRedGrad)" rx="10"/>
+    
+    <!-- Dynamic Swirl Ribbon Decorative Curve -->
+    <path d="M -20 220 C 150 180, 250 260, 520 180 L 520 262 L -20 262 Z" fill="#b7094c" opacity="0.4"/>
+    <path d="M -20 200 C 120 140, 300 240, 520 150 L 520 262 L -20 262 Z" fill="#d90429" opacity="0.6"/>
+
+    <!-- Ice Cubes Graphics -->
+    <rect x="360" y="180" width="24" height="24" fill="#ffffff" opacity="0.25" transform="rotate(15 360 180)" rx="4"/>
+    <rect x="420" y="190" width="20" height="20" fill="#ffffff" opacity="0.3" transform="rotate(-20 420 190)" rx="3"/>
+
+    <!-- Coca-Cola Official White Cursive Logo Text -->
+    <g transform="translate(25, 20)" filter="url(#dropShadow)">
+        <text x="0" y="42" fill="#ffffff" font-family="'Brush Script MT', 'Outfit', 'Georgia', cursive" font-size="46" font-weight="bold" font-style="italic" letter-spacing="-1">Coca-Cola</text>
+        <path d="M -5 46 C 45 62, 110 64, 185 46 C 130 58, 65 58, 10 46 Z" fill="#ffffff"/>
+    </g>
+
+    <!-- Promo Badge -->
+    <rect x="25" y="90" width="120" height="24" fill="#fbbf24" rx="4"/>
+    <text x="35" y="106" fill="#000000" font-family="Inter, sans-serif" font-size="11" font-weight="800" letter-spacing="0.5">SPECIAL DEAL</text>
+
+    <!-- Main Headline -->
+    <text x="25" y="145" fill="#ffffff" font-family="Outfit, sans-serif" font-size="26" font-weight="800" filter="url(#dropShadow)">Buy 5 Crates Get 1 Free!</text>
+    <text x="25" y="172" fill="#ffe4e6" font-family="Inter, sans-serif" font-size="13" font-weight="500">Coca-Cola, Sprite, Fanta &amp; Maltina Wholesale Combo</text>
+    <text x="25" y="192" fill="#fca5a5" font-family="Inter, sans-serif" font-size="11">Valid till 30 Jun 2024 • Wholesale Customers Only</text>
+
+    <!-- Action Button -->
+    <rect x="25" y="210" width="135" height="34" fill="url(#goldButton)" rx="6" filter="url(#dropShadow)"/>
+    <text x="45" y="232" fill="#000000" font-family="Inter, sans-serif" font-size="13" font-weight="800">View Details →</text>
+    
+    <!-- Bottle Contour Graphic right side -->
+    <g transform="translate(380, 20)" opacity="0.9" filter="url(#dropShadow)">
+        <!-- Coke Bottle contour -->
+        <path d="M 50 15 C 44 15 42 22 42 32 L 44 60 Q 35 68 35 90 Q 35 125 50 135 Q 65 125 65 90 Q 65 68 56 60 L 58 32 C 58 22 56 15 50 15 Z" fill="#ffffff" opacity="0.25"/>
+        <path d="M 50 20 C 46 20 44 26 44 34 L 46 62 Q 38 70 38 90 Q 38 120 50 130 Q 62 120 62 90 Q 62 70 54 62 L 56 34 C 56 26 54 20 50 20 Z" fill="#ffffff"/>
+        <rect x="42" y="65" width="16" height="20" fill="#dc2626"/>
+    </g>
+</svg>

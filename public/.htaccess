@@ -1,0 +1,5 @@
+Options -Indexes
+
+<FilesMatch "^(copy_images|copy_user_media|download_coke|generate_.*|save_base64)\.php$">
+    Require all denied
+</FilesMatch>

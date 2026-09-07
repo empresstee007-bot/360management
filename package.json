@@ -1,0 +1,19 @@
+{
+  "name": "360management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "find app public -type f -name '*.php' -print0 | xargs -0 -n1 php -l"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

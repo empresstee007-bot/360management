@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 400" width="100%" height="100%">
+    <defs>
+        <!-- Clear Liquid Gradient -->
+        <linearGradient id="clearLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f8fafc"/>
+            <stop offset="40%" stop-color="#e2e8f0"/>
+            <stop offset="70%" stop-color="#cbd5e1"/>
+            <stop offset="100%" stop-color="#94a3b8"/>
+        </linearGradient>
+        <!-- Green Screw Cap Gradient -->
+        <linearGradient id="greenCap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#16a34a"/>
+            <stop offset="100%" stop-color="#15803d"/>
+        </linearGradient>
+        <!-- Sprite Green Label Gradient -->
+        <linearGradient id="spriteGreenLabel" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#15803d"/>
+            <stop offset="50%" stop-color="#16a34a"/>
+            <stop offset="100%" stop-color="#166534"/>
+        </linearGradient>
+    </defs>
+    <rect width="200" height="400" fill="none"/>
+    <!-- Green Cap -->
+    <rect x="76" y="24" width="48" height="26" fill="url(#greenCap)" rx="5"/>
+    <line x1="82" y1="30" x2="82" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="90" y1="30" x2="90" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="98" y1="30" x2="98" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <line x1="106" y1="30" x2="106" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+
+    <path d="M 82 50 L 118 50 L 126 80 L 74 80 Z" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Clear PET Bottle Body -->
+    <path d="M 74 80 L 126 80 Q 148 110 148 150 L 148 330 Q 148 375 135 382 L 65 382 Q 52 375 52 330 L 52 150 Q 52 110 74 80 Z" fill="url(#clearLiquid)"/>
+
+    <!-- Bright Green Sprite Label -->
+    <path d="M 52 140 L 148 140 L 148 220 L 52 220 Z" fill="url(#spriteGreenLabel)"/>
+
+    <!-- White Sprite Typography on Label -->
+    <g transform="translate(56, 150)">
+        <text x="44" y="42" fill="#ffffff" font-family="'Outfit', Arial, sans-serif" font-size="34" font-weight="900" font-style="italic" text-anchor="middle" letter-spacing="-1">Sprite</text>
+        <circle cx="68" cy="18" r="5" fill="#ffffff"/>
+        <text x="44" y="60" fill="#fde047" font-family="Inter, sans-serif" font-size="8" font-weight="800" text-anchor="middle">LEMON-LIME</text>
+    </g>
+
+    <!-- PET Dimple Textures -->
+    <circle cx="70" cy="245" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="90" cy="245" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="110" cy="245" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="130" cy="245" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="70" cy="265" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="90" cy="265" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="110" cy="265" r="3" fill="#64748b" opacity="0.4"/>
+    <circle cx="130" cy="265" r="3" fill="#64748b" opacity="0.4"/>
+
+    <!-- Highlight Gloss -->
+    <path d="M 60 85 Q 68 115 68 150 L 68 360" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.6"/>
+</svg>

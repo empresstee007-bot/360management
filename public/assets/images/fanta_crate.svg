@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+    <rect width="100" height="100" fill="none"/>
+    <!-- Orange Plastic Crate Box -->
+    <rect x="8" y="25" width="84" height="65" fill="#ea580c" rx="6" stroke="#c2410c" stroke-width="3"/>
+    <rect x="14" y="32" width="20" height="22" fill="#c2410c" rx="2"/>
+    <rect x="40" y="32" width="20" height="22" fill="#c2410c" rx="2"/>
+    <rect x="66" y="32" width="20" height="22" fill="#c2410c" rx="2"/>
+    <rect x="14" y="60" width="20" height="24" fill="#c2410c" rx="2"/>
+    <rect x="40" y="60" width="20" height="24" fill="#c2410c" rx="2"/>
+    <rect x="66" y="60" width="20" height="24" fill="#c2410c" rx="2"/>
+    <!-- Fanta Orange Liquid Tops -->
+    <circle cx="24" cy="20" r="7" fill="#f97316"/>
+    <circle cx="50" cy="20" r="7" fill="#f97316"/>
+    <circle cx="76" cy="20" r="7" fill="#f97316"/>
+    <rect x="21" y="10" width="6" height="10" fill="#2563eb"/>
+    <rect x="47" y="10" width="6" height="10" fill="#2563eb"/>
+    <rect x="73" y="10" width="6" height="10" fill="#2563eb"/>
+</svg>

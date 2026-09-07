@@ -1,0 +1,13 @@
+Options -Indexes
+DirectoryIndex public/index.php index.php index.html
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(app|database|docs)(/|$) - [F,L]
+    RewriteRule ^public/(copy_images|copy_user_media|download_coke|generate_.*|save_base64)\.php$ - [F,L]
+</IfModule>

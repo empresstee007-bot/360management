@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="100%" height="100%">
+    <defs>
+        <linearGradient id="promoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e1b4b"/>
+            <stop offset="50%" stop-color="#312e81"/>
+            <stop offset="100%" stop-color="#4338ca"/>
+        </linearGradient>
+    </defs>
+    <rect width="600" height="240" fill="url(#promoBg)" rx="12"/>
+    
+    <!-- Background Bubbles -->
+    <circle cx="500" cy="120" r="130" fill="#3730a3" opacity="0.5"/>
+    <circle cx="520" cy="90" r="80" fill="#4f46e5" opacity="0.4"/>
+
+    <!-- Bottle Artwork Group -->
+    <g transform="translate(420, 25)">
+        <!-- Coca-Cola Bottle (Red) -->
+        <path d="M 10 30 Q 10 15 15 5 L 25 5 Q 30 15 30 30 L 32 110 Q 32 125 20 125 Q 8 125 8 110 Z" fill="#dc2626"/>
+        <rect x="8" y="60" width="24" height="25" fill="#ffffff"/>
+        <text x="10" y="77" fill="#dc2626" font-family="Outfit" font-size="8" font-weight="bold">Coke</text>
+        
+        <!-- Fanta Bottle (Orange) -->
+        <path d="M 40 35 Q 40 20 45 10 L 55 10 Q 60 20 60 35 L 62 110 Q 62 125 50 125 Q 38 125 38 110 Z" fill="#ea580c"/>
+        <rect x="38" y="65" width="24" height="25" fill="#fef08a"/>
+        <text x="40" y="82" fill="#ea580c" font-family="Outfit" font-size="8" font-weight="bold">Fanta</text>
+
+        <!-- Sprite Bottle (Green) -->
+        <path d="M 70 25 Q 70 10 75 0 L 85 0 Q 90 10 90 25 L 92 110 Q 92 125 80 125 Q 68 125 68 110 Z" fill="#16a34a"/>
+        <rect x="68" y="55" width="24" height="25" fill="#ffffff"/>
+        <text x="70" y="72" fill="#16a34a" font-family="Outfit" font-size="8" font-weight="bold">Sprite</text>
+
+        <!-- Maltina Bottle (Brown) -->
+        <path d="M 100 40 Q 100 25 105 15 L 115 15 Q 120 25 120 40 L 122 110 Q 122 125 110 125 Q 98 125 98 110 Z" fill="#78350f"/>
+        <rect x="98" y="70" width="24" height="25" fill="#fbbf24"/>
+        <text x="100" y="87" fill="#78350f" font-family="Outfit" font-size="7" font-weight="bold">Maltina</text>
+    </g>
+
+    <!-- Ice Cubes Illustration -->
+    <rect x="400" y="160" width="25" height="25" fill="#e0f2fe" opacity="0.7" transform="rotate(15, 400, 160)" rx="4"/>
+    <rect x="440" y="170" width="20" height="20" fill="#e0f2fe" opacity="0.8" transform="rotate(-20, 440, 170)" rx="3"/>
+    <rect x="520" y="150" width="22" height="22" fill="#e0f2fe" opacity="0.7" transform="rotate(30, 520, 150)" rx="4"/>
+
+    <!-- Deal Badge & Headlines -->
+    <rect x="30" y="30" width="130" height="28" fill="#f59e0b" rx="6"/>
+    <text x="42" y="49" fill="#000000" font-family="Inter, sans-serif" font-size="12" font-weight="bold">SPECIAL PROMO</text>
+
+    <text x="30" y="105" fill="#fbbf24" font-family="Outfit, sans-serif" font-size="30" font-weight="800">Buy 5 Crates Get 1 Free!</text>
+    <text x="30" y="135" fill="#e0e7ff" font-family="Inter, sans-serif" font-size="15" font-weight="500">Coca-Cola, Sprite, Fanta &amp; Maltina Wholesale Offer</text>
+    <text x="30" y="160" fill="#93c5fd" font-family="Inter, sans-serif" font-size="13">Valid till 30 Jun 2024 • Applicable automatically at POS checkout</text>
+
+    <!-- Action Button -->
+    <rect x="30" y="180" width="150" height="38" fill="#f59e0b" rx="8"/>
+    <text x="58" y="204" fill="#000000" font-family="Inter, sans-serif" font-size="14" font-weight="bold">View Details →</text>
+</svg>
