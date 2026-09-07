@@ -132,6 +132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash($settlementRes['success'] ? "✅ " . $settlementRes['message'] : "⚠️ Could not record rebate settlement.");
         }
         redirect('beverage_pos.php?tab=rebates');
+    } elseif ($formAction === 'delete_rebate_settlement') {
+        if (!$canManagePricing) {
+            flash("⚠️ Permission Denied: Only Admin or Pricing Manager can delete rebate settlements.");
+        } else {
+            $ok = \App\Modules\Pos\PricingRebateService::deleteRebateSettlement((string)($_POST['settlement_id'] ?? ''), $user['name'] ?? 'Admin');
+            flash($ok ? "✅ Rebate settlement deleted." : "⚠️ Could not delete rebate settlement.");
+        }
+        redirect('beverage_pos.php?tab=rebates');
     } elseif ($formAction === 'save_promotion_rule') {
         if (!$canManagePricing) {
             $actionMessage = "⚠️ Permission Denied: Only Admin or Pricing Manager can modify promotion rules.";

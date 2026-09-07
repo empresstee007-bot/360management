@@ -1235,6 +1235,51 @@ class PricingRebateService
         return array_slice($_SESSION['rebate_settlements'] ?? [], 0, $limit);
     }
 
+    public static function deleteRebateSettlement(string $settlementId, ?string $user = null): bool
+    {
+        $settlementId = trim($settlementId);
+        if ($settlementId === '') {
+            return false;
+        }
+
+        $settlements = $_SESSION['rebate_settlements'] ?? self::getRebateSettlements();
+        $deleted = null;
+        $filtered = [];
+        foreach ($settlements as $settlement) {
+            if ((string)($settlement['id'] ?? '') === $settlementId) {
+                $deleted = $settlement;
+            } else {
+                $filtered[] = $settlement;
+            }
+        }
+
+        if (!$deleted) {
+            return false;
+        }
+
+        $_SESSION['rebate_settlements'] = array_values($filtered);
+        $pdo = Database::getConnection();
+        if ($pdo) {
+            try {
+                self::ensureRebateSettlementsTable($pdo);
+                $stmt = $pdo->prepare('DELETE FROM rebate_settlements WHERE settlement_id = ? AND company_id = "beverage"');
+                $stmt->execute([$settlementId]);
+            } catch (\Throwable $t) {
+                return false;
+            }
+        }
+
+        self::logAudit(
+            'rebate_settlement',
+            $settlementId,
+            'Delete Rebate Settlement',
+            $deleted,
+            [],
+            $user ?? (\current_user()['name'] ?? 'Admin')
+        );
+        return true;
+    }
+
     public static function summarizeExpectedVsConfirmedRebates(array $transactions = []): array
     {
         $expectedBySku = [];

@@ -4363,16 +4363,18 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                         <form method="post" action="<?= url('beverage_pos.php?tab=rebates') ?>" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;align-items:end;margin-bottom:1rem">
                             <?= csrf_field() ?>
                             <input type="hidden" name="form_action" value="record_rebate_settlement">
+                            <input type="hidden" name="settlement_id" id="rebateSettlementId" value="">
                             <div class="settings-field"><label for="rebateSupplier">Supplier</label><select id="rebateSupplier" name="supplier"><option value="">Select supplier</option><?php foreach ($rebateSuppliers as $supplier): ?><option value="<?= e((string)$supplier) ?>"><?= e((string)$supplier) ?></option><?php endforeach; ?></select></div>
                             <div class="settings-field"><label for="rebateSku">SKU / ALL</label><select id="rebateSku" name="sku"><option value="ALL">ALL</option></select></div>
-                            <div class="settings-field"><label>Period Start</label><input type="date" name="period_start" value="<?= date('Y-m-01') ?>"></div>
-                            <div class="settings-field"><label>Period End</label><input type="date" name="period_end" value="<?= date('Y-m-t') ?>"></div>
-                            <div class="settings-field"><label>Expected Amount</label><input type="number" step="0.01" min="0" name="expected_amount" placeholder="0.00"></div>
-                            <div class="settings-field"><label>Confirmed Amount</label><input type="number" step="0.01" min="0" name="confirmed_amount" placeholder="0.00"></div>
-                            <div class="settings-field"><label>Received Amount</label><input type="number" step="0.01" min="0" name="received_amount" placeholder="0.00"></div>
-                            <div class="settings-field"><label>Reference</label><input type="text" name="reference" placeholder="Credit note / bank ref"></div>
-                            <div class="settings-field"><label>Status</label><select name="status"><option>Expected</option><option selected>Confirmed</option><option>Received</option><option>Disputed</option><option>Reversed</option></select></div>
-                            <button type="submit" class="btn-complete-sale" style="height:42px;padding:0 1rem">Record Settlement</button>
+                            <div class="settings-field"><label>Period Start</label><input id="rebatePeriodStart" type="date" name="period_start" value="<?= date('Y-m-01') ?>"></div>
+                            <div class="settings-field"><label>Period End</label><input id="rebatePeriodEnd" type="date" name="period_end" value="<?= date('Y-m-t') ?>"></div>
+                            <div class="settings-field"><label>Expected Amount</label><input id="rebateExpectedAmount" type="number" step="0.01" min="0" name="expected_amount" placeholder="0.00"></div>
+                            <div class="settings-field"><label>Confirmed Amount</label><input id="rebateConfirmedAmount" type="number" step="0.01" min="0" name="confirmed_amount" placeholder="0.00"></div>
+                            <div class="settings-field"><label>Received Amount</label><input id="rebateReceivedAmount" type="number" step="0.01" min="0" name="received_amount" placeholder="0.00"></div>
+                            <div class="settings-field"><label>Reference</label><input id="rebateReference" type="text" name="reference" placeholder="Credit note / bank ref"></div>
+                            <div class="settings-field"><label>Status</label><select id="rebateStatus" name="status"><option>Expected</option><option selected>Confirmed</option><option>Received</option><option>Disputed</option><option>Reversed</option></select></div>
+                            <button type="submit" id="rebateSettlementSubmit" class="btn-complete-sale" style="height:42px;padding:0 1rem">Record Settlement</button>
+                            <button type="button" id="rebateSettlementCancel" onclick="resetRebateSettlementForm()" style="display:none;height:42px;padding:0 1rem;border:1px solid #cbd5e1;background:#fff;border-radius:8px;font-weight:800;cursor:pointer">Cancel Edit</button>
                         </form>
                         <script>
                             (function () {
@@ -4393,12 +4395,45 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                                     });
                                 });
                             }());
+
+                            function resetRebateSettlementForm() {
+                                document.getElementById('rebateSettlementId').value = '';
+                                document.getElementById('rebateSupplier').value = '';
+                                document.getElementById('rebateSupplier').dispatchEvent(new Event('change'));
+                                document.getElementById('rebateSku').value = 'ALL';
+                                document.getElementById('rebatePeriodStart').value = '<?= date('Y-m-01') ?>';
+                                document.getElementById('rebatePeriodEnd').value = '<?= date('Y-m-t') ?>';
+                                document.getElementById('rebateExpectedAmount').value = '';
+                                document.getElementById('rebateConfirmedAmount').value = '';
+                                document.getElementById('rebateReceivedAmount').value = '';
+                                document.getElementById('rebateReference').value = '';
+                                document.getElementById('rebateStatus').value = 'Confirmed';
+                                document.getElementById('rebateSettlementSubmit').textContent = 'Record Settlement';
+                                document.getElementById('rebateSettlementCancel').style.display = 'none';
+                            }
+
+                            function editRebateSettlement(settlement) {
+                                document.getElementById('rebateSettlementId').value = settlement.id || '';
+                                document.getElementById('rebateSupplier').value = settlement.supplier || '';
+                                document.getElementById('rebateSupplier').dispatchEvent(new Event('change'));
+                                document.getElementById('rebateSku').value = settlement.sku || 'ALL';
+                                document.getElementById('rebatePeriodStart').value = settlement.period_start || '';
+                                document.getElementById('rebatePeriodEnd').value = settlement.period_end || '';
+                                document.getElementById('rebateExpectedAmount').value = settlement.expected_amount || 0;
+                                document.getElementById('rebateConfirmedAmount').value = settlement.confirmed_amount || 0;
+                                document.getElementById('rebateReceivedAmount').value = settlement.received_amount || 0;
+                                document.getElementById('rebateReference').value = settlement.reference || '';
+                                document.getElementById('rebateStatus').value = settlement.status || 'Confirmed';
+                                document.getElementById('rebateSettlementSubmit').textContent = 'Update Settlement';
+                                document.getElementById('rebateSettlementCancel').style.display = 'inline-block';
+                                document.getElementById('rebateSettlementId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
                         </script>
                     <?php endif; ?>
                     <?php if (!empty($rebateSettlements)): ?>
                         <div style="overflow:auto">
                             <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
-                                <thead><tr style="background:#f8fafc;text-align:left"><th style="padding:0.65rem">SKU</th><th style="padding:0.65rem">Period</th><th style="padding:0.65rem">Expected</th><th style="padding:0.65rem">Confirmed</th><th style="padding:0.65rem">Received</th><th style="padding:0.65rem">Status</th></tr></thead>
+                                <thead><tr style="background:#f8fafc;text-align:left"><th style="padding:0.65rem">SKU</th><th style="padding:0.65rem">Period</th><th style="padding:0.65rem">Expected</th><th style="padding:0.65rem">Confirmed</th><th style="padding:0.65rem">Received</th><th style="padding:0.65rem">Status</th><th style="padding:0.65rem">Actions</th></tr></thead>
                                 <tbody>
                                     <?php foreach (array_slice($rebateSettlements, 0, 8) as $settlement): ?>
                                         <tr style="border-bottom:1px solid #f1f5f9">
@@ -4408,6 +4443,15 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                                             <td style="padding:0.65rem">₦<?= number_format((float)($settlement['confirmed_amount'] ?? 0), 2) ?></td>
                                             <td style="padding:0.65rem">₦<?= number_format((float)($settlement['received_amount'] ?? 0), 2) ?></td>
                                             <td style="padding:0.65rem"><span style="background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:0.2rem 0.5rem;font-weight:800;font-size:0.72rem"><?= e((string)($settlement['status'] ?? 'Confirmed')) ?></span></td>
+                                            <td style="padding:0.65rem;white-space:nowrap">
+                                                <button type="button" onclick='editRebateSettlement(<?= htmlspecialchars(json_encode($settlement), ENT_QUOTES, "UTF-8") ?>)' style="border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;border-radius:6px;padding:0.3rem 0.5rem;font-weight:800;cursor:pointer">Edit</button>
+                                                <form method="post" action="<?= url('beverage_pos.php?tab=rebates') ?>" style="display:inline" onsubmit="return confirm('Delete this rebate settlement?');">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="form_action" value="delete_rebate_settlement">
+                                                    <input type="hidden" name="settlement_id" value="<?= e((string)($settlement['id'] ?? '')) ?>">
+                                                    <button type="submit" style="border:1px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:6px;padding:0.3rem 0.5rem;font-weight:800;cursor:pointer">Delete</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
