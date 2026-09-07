@@ -5849,15 +5849,20 @@ function onRebateLevelChange() {
     if (lvl === 'global') {
         targetInput.style.display = 'block';
         targetInput.name = 'target_key';
+        targetInput.required = true;
         targetSelect.style.display = 'none';
+        targetSelect.required = false;
+        targetSelect.removeAttribute('name');
         targetInput.value = 'ALL';
         targetInput.readOnly = true;
     } else if (lvl === 'supplier' || lvl === 'product') {
         targetInput.style.display = 'none';
         targetInput.removeAttribute('name');
+        targetInput.required = false;
         targetInput.readOnly = false;
         targetSelect.style.display = 'block';
         targetSelect.name = 'target_key';
+        targetSelect.required = true;
 
         if (lvl === 'supplier') {
             targetSelect.add(new Option('Select supplier', ''));
@@ -5879,7 +5884,10 @@ function onRebateLevelChange() {
     } else {
         targetInput.style.display = 'block';
         targetInput.name = 'target_key';
+        targetInput.required = true;
         targetSelect.style.display = 'none';
+        targetSelect.required = false;
+        targetSelect.removeAttribute('name');
         targetInput.readOnly = false;
         if (targetInput.value === 'ALL') targetInput.value = '';
     }
