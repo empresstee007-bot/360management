@@ -294,7 +294,7 @@ if ($activeTab === 'rebates') {
     } catch (Throwable) {
         $rebateSuppliers = [];
     }
-    $catalog = [];
+    $catalog = PosService::getCatalog('beverage');
     $availableProducts = [];
     $totalAvailableStock = 0;
     $lowStockCount = 0;
