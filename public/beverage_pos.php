@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if ($activeTab === 'pricing-audit') {
-    $catalog = [];
+    $catalog = PosService::getCatalog('beverage');
     $availableProducts = [];
     $totalAvailableStock = 0;
     $lowStockCount = 0;

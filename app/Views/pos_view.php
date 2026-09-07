@@ -4234,6 +4234,23 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                     }
                     $rebateSupplierProducts[$supplierName] = $products;
                 }
+                $catalogProducts = [];
+                foreach (is_array($catalog ?? null) ? $catalog : [] as $product) {
+                    $sku = trim((string)($product['sku'] ?? ''));
+                    if ($sku === '') {
+                        continue;
+                    }
+                    $label = trim((string)($product['name'] ?? $sku)) . ' - ' . $sku;
+                    $catalogProducts[] = ['value' => $sku, 'label' => $label];
+                    $supplier = trim((string)($product['supplier'] ?? ''));
+                    if ($supplier !== '') {
+                        $rebateSupplierProducts[$supplier] = $rebateSupplierProducts[$supplier] ?? [];
+                        $rebateSupplierProducts[$supplier][] = ['value' => $sku, 'label' => $label];
+                    }
+                }
+                if ($catalogProducts !== []) {
+                    $rebateSupplierProducts['Current Product Catalog'] = $catalogProducts;
+                }
             ?>
             <section class="transfer-screen">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
