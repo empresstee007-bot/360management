@@ -16,6 +16,14 @@ class PosService
     {
         if (class_exists('App\Modules\BeverageWarehouse\BeverageWarehouseService')) {
             $whProducts = \App\Modules\BeverageWarehouse\BeverageWarehouseService::getProducts();
+            $supplierCatalogPath = dirname(__DIR__, 2) . '/Config/suppliers.php';
+            $supplierCatalog = file_exists($supplierCatalogPath) ? require $supplierCatalogPath : [];
+            $supplierBrandMap = [];
+            foreach (is_array($supplierCatalog) ? $supplierCatalog : [] as $supplier => $brands) {
+                foreach (array_keys(is_array($brands) ? $brands : []) as $brand) {
+                    $supplierBrandMap[strtoupper(trim((string)$brand))] = (string)$supplier;
+                }
+            }
             $posCatalog = [];
             foreach ($whProducts as $idx => $p) {
                 $costPrice = (float)($p['cost_price'] ?? 0.0);
@@ -31,6 +39,16 @@ class PosService
                 $packaging = trim((string)($p['packaging'] ?? 'Crate of 24'));
                 $priceType = str_contains(strtolower($packaging), 'pack') || ($p['category'] ?? '') === 'Water' ? 'Packs' : 'Crates';
                 $sku = (string)($p['sku'] ?? '');
+                $supplier = trim((string)($p['supplier'] ?? ''));
+                if ($supplier === '') {
+                    $productName = strtoupper(trim((string)($p['name'] ?? '')));
+                    foreach ($supplierBrandMap as $brand => $mappedSupplier) {
+                        if ($brand !== '' && str_contains($productName, $brand)) {
+                            $supplier = $mappedSupplier;
+                            break;
+                        }
+                    }
+                }
 
                 // Dynamic pricing tiers and hierarchical rebate
                 $pricingTiers = class_exists('App\Modules\Pos\PricingRebateService')
@@ -51,7 +69,7 @@ class PosService
                     'sku' => $sku,
                     'name' => $p['name'] ?? '',
                     'brand' => $p['brand'] ?? '',
-                    'supplier' => $p['supplier'] ?? '',
+                    'supplier' => $supplier,
                     'category' => $p['category'] ?? 'Soft Drinks',
                     'packaging' => $packaging,
                     'packaging_type' => $p['packaging_type'] ?? '',

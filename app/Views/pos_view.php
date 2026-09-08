@@ -5251,6 +5251,12 @@ $receiptCopies = [
             </div>
 
             <div style="margin-bottom:1rem">
+                <label for="modal_customer_price" style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Customer Standard Price (₦) <small style="font-weight:600;color:#64748b;text-transform:none">optional override</small></label>
+                <input type="number" name="customer_price" id="modal_customer_price" step="0.01" min="0" placeholder="e.g. 4100; leave blank to calculate from %" style="width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1rem;font-weight:800;color:#059669">
+                <small style="display:block;margin-top:0.25rem;color:#64748b;font-size:0.7rem">This is the standard price customers pay. Quantity pricing tiers override it for their ranges.</small>
+            </div>
+
+            <div style="margin-bottom:1rem">
                 <label style="display:block;font-size:0.75rem;font-weight:800;color:#334155;margin-bottom:0.35rem">Description / Note</label>
                 <input type="text" name="description" id="modal_rebate_desc" placeholder="e.g. NBC Quarterly Volume Rebate" style="width:100%;padding:0.6rem 0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:0.85rem">
             </div>
@@ -5545,7 +5551,14 @@ startPosRealtimeSync();
 function resolveTierForQtyJS(item, qty) {
     qty = Math.max(1, parseInt(qty || 1));
     const tiers = Array.isArray(item.pricing_tiers) ? item.pricing_tiers : [];
-    const basePrice = parseFloat(item.wholesale_price || item.selling_price || item.price_per_unit || item.cost_price || 0);
+    const rawBasePrice = parseFloat(item.invoice_price || item.cost_price || item.wholesale_price || item.selling_price || item.price_per_unit || 0);
+    const rebateInfo = item.rebate_info || {};
+    const rebatePct = Math.max(0, Math.min(100, parseFloat(rebateInfo.rebate_pct || 0)));
+    const adjustmentFactor = Math.max(0, Math.min(100, parseFloat(rebateInfo.adjustment_factor || 100)));
+    const configuredCustomerPrice = parseFloat(rebateInfo.customer_price || 0);
+    const rebatedBasePrice = configuredCustomerPrice > 0
+        ? configuredCustomerPrice
+        : Math.max(0, rawBasePrice * (1 - ((rebatePct * adjustmentFactor) / 10000)));
     const channelEl = document.getElementById('bevSalesChannel');
     const activeChannel = channelEl ? channelEl.value : 'depot_sale';
 
@@ -5579,7 +5592,7 @@ function resolveTierForQtyJS(item, qty) {
         tier_id: 'STANDARD',
         tier_name: 'Standard Price',
         range_label: 'Standard',
-        selling_price: basePrice,
+        selling_price: rebatedBasePrice,
         is_custom: false
     };
 }
@@ -5869,6 +5882,7 @@ function openAddRebateModal() {
     document.getElementById('modal_rebate_level').value = 'global';
     document.getElementById('modal_rebate_target').value = 'ALL';
     document.getElementById('modal_rebate_pct').value = '0.0';
+    document.getElementById('modal_customer_price').value = '';
     document.getElementById('modal_rebate_desc').value = '';
     document.getElementById('modal_rebate_base_price').value = '';
     document.getElementById('modal_rebate_adjustment_factor').value = '100';
@@ -5884,6 +5898,7 @@ function openEditRebateModal(rule) {
     document.getElementById('modal_rebate_level').value = rule.level || 'global';
     document.getElementById('modal_rebate_target').value = rule.target_key || 'ALL';
     document.getElementById('modal_rebate_pct').value = rule.rebate_pct || '';
+    document.getElementById('modal_customer_price').value = rule.customer_price || '';
     document.getElementById('modal_rebate_desc').value = rule.description || '';
     document.getElementById('modal_rebate_base_price').value = rule.rebate_base_price || '';
     document.getElementById('modal_rebate_adjustment_factor').value = rule.adjustment_factor || '100';

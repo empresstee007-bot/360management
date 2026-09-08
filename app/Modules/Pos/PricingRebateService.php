@@ -439,6 +439,10 @@ class PricingRebateService
         }
 
         $basePrice = self::baseSellingPrice($product);
+        $standardRebate = self::resolveRebate($product);
+        if (!$matchedTier && (float)($standardRebate['rebate_pct'] ?? 0) > 0) {
+            $basePrice = self::customerPriceAfterRebate(self::rebatePricingBase($product, $basePrice), $standardRebate);
+        }
         if ($matchedTier && isset($matchedTier['selling_price']) && (float)$matchedTier['selling_price'] > 0) {
             $sellingPrice = (float)$matchedTier['selling_price'];
             $tierName = (string)$matchedTier['tier_name'];
@@ -589,6 +593,12 @@ class PricingRebateService
         $sku = strtoupper(trim((string)($product['sku'] ?? '')));
         $brand = strtoupper(trim((string)($product['brand'] ?? '')));
         $supplier = strtoupper(trim((string)($product['supplier'] ?? '')));
+        if ($supplier === '') {
+            $supplier = strtoupper(self::inferSupplier($product));
+        }
+        if ($supplier === '') {
+            $supplier = strtoupper(self::inferSupplier($product));
+        }
         $channel = self::normalizeSalesChannel($salesChannel);
         $today = date('Y-m-d');
         $qty = max(1, $qty);
@@ -724,6 +734,7 @@ class PricingRebateService
         }
         $rebatePct = max(0.0, min(100.0, (float)($data['rebate_pct'] ?? 0.0)));
         $rebateBasePrice = max(0.0, (float)($data['rebate_base_price'] ?? 0.0));
+        $customerPrice = max(0.0, (float)($data['customer_price'] ?? 0.0));
         $adjustmentFactor = max(0.0, min(100.0, (float)($data['adjustment_factor'] ?? 100.0)));
         $formulaType = trim((string)($data['formula_type'] ?? 'standard_pct'));
         $description = trim((string)($data['description'] ?? ''));
@@ -736,7 +747,9 @@ class PricingRebateService
         $ruleIndex = null;
 
         foreach ($rules as $idx => $r) {
-            if ((string)($r['id'] ?? '') === $ruleId || ($level === 'global' && strtolower((string)($r['level'] ?? '')) === 'global')) {
+            $sameTarget = strtolower((string)($r['level'] ?? '')) === $level
+                && strtoupper(trim((string)($r['target_key'] ?? ''))) === $targetKey;
+            if ((string)($r['id'] ?? '') === $ruleId || $sameTarget || ($level === 'global' && strtolower((string)($r['level'] ?? '')) === 'global')) {
                 $oldRule = $r;
                 $ruleIndex = $idx;
                 $ruleId = $r['id'] ?? $ruleId;
@@ -750,6 +763,7 @@ class PricingRebateService
             'target_key' => $targetKey,
             'rebate_pct' => $rebatePct,
             'rebate_base_price' => $rebateBasePrice,
+            'customer_price' => $customerPrice,
             'adjustment_factor' => $adjustmentFactor,
             'formula_type' => $formulaType,
             'description' => $description ?: self::defaultRebateDescription($level, $targetKey, $rebatePct),
@@ -913,6 +927,7 @@ class PricingRebateService
         return [
             'rebate_pct' => (float)($rule['rebate_pct'] ?? 0.0),
             'rebate_base_price' => (float)($rule['rebate_base_price'] ?? 0.0),
+            'customer_price' => (float)($rule['customer_price'] ?? 0.0),
             'adjustment_factor' => (float)($rule['adjustment_factor'] ?? 100.0),
             'formula_type' => (string)($rule['formula_type'] ?? 'standard_pct'),
             'level' => (string)($rule['level'] ?? 'global'),
@@ -1529,6 +1544,7 @@ class PricingRebateService
                     target_key VARCHAR(150) NOT NULL,
                     rebate_pct DECIMAL(7,3) NOT NULL DEFAULT 0.000,
                     rebate_base_price DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+                    customer_price DECIMAL(12,2) NOT NULL DEFAULT 0.00,
                     adjustment_factor DECIMAL(7,3) NOT NULL DEFAULT 100.000,
                     formula_type VARCHAR(50) NOT NULL DEFAULT "standard_pct",
                     description VARCHAR(255) DEFAULT NULL,
@@ -1542,6 +1558,7 @@ class PricingRebateService
             );
             foreach ([
                 'rebate_base_price DECIMAL(12,2) NOT NULL DEFAULT 0.00',
+                'customer_price DECIMAL(12,2) NOT NULL DEFAULT 0.00',
                 'adjustment_factor DECIMAL(7,3) NOT NULL DEFAULT 100.000',
                 'formula_type VARCHAR(50) NOT NULL DEFAULT "standard_pct"',
             ] as $columnSql) {
@@ -1813,14 +1830,22 @@ class PricingRebateService
 
         try {
             self::ensurePricingTables($pdo);
-            $stmt = $pdo->query('SELECT rule_id, level, target_key, rebate_pct, rebate_base_price, adjustment_factor, formula_type, description, is_active, start_date, end_date, updated_by, updated_at FROM rebate_rules WHERE company_id = "beverage" ORDER BY FIELD(level, "promotion", "product", "brand", "supplier", "global"), target_key ASC');
+            $stmt = $pdo->query('SELECT rule_id, level, target_key, rebate_pct, rebate_base_price, customer_price, adjustment_factor, formula_type, description, is_active, start_date, end_date, updated_by, updated_at FROM rebate_rules WHERE company_id = "beverage" ORDER BY updated_at DESC, FIELD(level, "promotion", "product", "brand", "supplier", "global"), target_key ASC');
             $rows = $stmt ? $stmt->fetchAll() : [];
+            $latestByTarget = [];
+            foreach ($rows as $row) {
+                $targetId = strtolower((string)($row['level'] ?? '')) . ':' . strtoupper(trim((string)($row['target_key'] ?? '')));
+                if (!isset($latestByTarget[$targetId])) {
+                    $latestByTarget[$targetId] = $row;
+                }
+            }
             return array_map(static fn (array $row): array => [
                 'id' => (string)$row['rule_id'],
                 'level' => (string)$row['level'],
                 'target_key' => (string)$row['target_key'],
                 'rebate_pct' => (float)$row['rebate_pct'],
                 'rebate_base_price' => (float)($row['rebate_base_price'] ?? 0),
+                'customer_price' => (float)($row['customer_price'] ?? 0),
                 'adjustment_factor' => (float)($row['adjustment_factor'] ?? 100),
                 'formula_type' => (string)($row['formula_type'] ?? 'standard_pct'),
                 'description' => (string)($row['description'] ?? ''),
@@ -1829,7 +1854,7 @@ class PricingRebateService
                 'end_date' => $row['end_date'] ?: null,
                 'updated_at' => (string)$row['updated_at'],
                 'updated_by' => (string)($row['updated_by'] ?? ''),
-            ], $rows);
+            ], array_values($latestByTarget));
         } catch (\Throwable $t) {
             return [];
         }
@@ -1845,9 +1870,9 @@ class PricingRebateService
         try {
             self::ensurePricingTables($pdo);
             $stmt = $pdo->prepare(
-                'INSERT INTO rebate_rules (rule_id, company_id, level, target_key, rebate_pct, rebate_base_price, adjustment_factor, formula_type, description, is_active, start_date, end_date, updated_by, updated_at)
-                 VALUES (?, "beverage", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE level=VALUES(level), target_key=VALUES(target_key), rebate_pct=VALUES(rebate_pct), rebate_base_price=VALUES(rebate_base_price), adjustment_factor=VALUES(adjustment_factor), formula_type=VALUES(formula_type), description=VALUES(description), is_active=VALUES(is_active), start_date=VALUES(start_date), end_date=VALUES(end_date), updated_by=VALUES(updated_by), updated_at=VALUES(updated_at)'
+                'INSERT INTO rebate_rules (rule_id, company_id, level, target_key, rebate_pct, rebate_base_price, customer_price, adjustment_factor, formula_type, description, is_active, start_date, end_date, updated_by, updated_at)
+                 VALUES (?, "beverage", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE level=VALUES(level), target_key=VALUES(target_key), rebate_pct=VALUES(rebate_pct), rebate_base_price=VALUES(rebate_base_price), customer_price=VALUES(customer_price), adjustment_factor=VALUES(adjustment_factor), formula_type=VALUES(formula_type), description=VALUES(description), is_active=VALUES(is_active), start_date=VALUES(start_date), end_date=VALUES(end_date), updated_by=VALUES(updated_by), updated_at=VALUES(updated_at)'
             );
             $stmt->execute([
                 $rule['id'],
@@ -1855,6 +1880,7 @@ class PricingRebateService
                 $rule['target_key'],
                 (float)$rule['rebate_pct'],
                 (float)($rule['rebate_base_price'] ?? 0),
+                (float)($rule['customer_price'] ?? 0),
                 (float)($rule['adjustment_factor'] ?? 100),
                 $rule['formula_type'] ?? 'standard_pct',
                 $rule['description'] ?? null,
@@ -2002,6 +2028,59 @@ class PricingRebateService
         }
 
         return 0.0;
+    }
+
+    private static function customerPriceAfterRebate(float $basePrice, array $rebate): float
+    {
+        $rebatePct = max(0.0, min(100.0, (float)($rebate['rebate_pct'] ?? 0)));
+        $adjustmentFactor = max(0.0, min(100.0, (float)($rebate['adjustment_factor'] ?? 100)));
+        return max(0.0, $basePrice * (1 - (($rebatePct * $adjustmentFactor) / 10000)));
+    }
+
+    private static function rebatePricingBase(array $product, float $fallback): float
+    {
+        foreach (['invoice_price', 'cost_price'] as $field) {
+            $value = (float)($product[$field] ?? 0.0);
+            if ($value > 0) {
+                return $value;
+            }
+        }
+        return $fallback;
+    }
+
+    private static function inferSupplier(array $product): string
+    {
+        $catalogPath = dirname(__DIR__, 2) . '/Config/suppliers.php';
+        $supplierCatalog = is_file($catalogPath) ? require $catalogPath : [];
+        $haystack = strtoupper(trim((string)($product['brand'] ?? '') . ' ' . (string)($product['name'] ?? '')));
+
+        foreach (is_array($supplierCatalog) ? $supplierCatalog : [] as $supplier => $brands) {
+            foreach (array_keys(is_array($brands) ? $brands : []) as $brand) {
+                $brandKey = strtoupper(trim((string)$brand));
+                if ($brandKey !== '' && str_contains($haystack, $brandKey)) {
+                    return (string)$supplier;
+                }
+            }
+        }
+
+        $aliases = [
+            'COKE' => 'Nigerian Bottling Company (NBC)',
+            '5ALIVE' => 'Nigerian Bottling Company (NBC)',
+            'PEPSI' => 'Seven-Up Bottling Company',
+            '7UP' => 'Seven-Up Bottling Company',
+            'BIG COLA' => 'Rite Foods Limited',
+            'BIGI' => 'Rite Foods Limited',
+            'PLANET' => 'Planet Bottling Company',
+            'CIELLO' => 'AJE Group Nigeria / The BIG Bottling Company',
+            'CIFRUT' => 'AJE Group Nigeria / The BIG Bottling Company',
+        ];
+        foreach ($aliases as $alias => $supplier) {
+            if (str_contains($haystack, $alias)) {
+                return $supplier;
+            }
+        }
+
+        return '';
     }
 
     private static function defaultRebateDescription(string $level, string $targetKey, float $pct): string
