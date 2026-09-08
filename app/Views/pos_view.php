@@ -3512,6 +3512,21 @@ if (!in_array($posActiveLogisticsView, ['dispatch', 'returns', 'pod'], true)) {
                         </button>
                     </form>
                 </div>
+
+                <?php if (!empty($canManagePricing) && !empty($pendingPriceApprovals)): ?>
+                    <div style="margin:0.75rem 0;padding:0.85rem;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px">
+                        <strong style="display:block;color:#9a3412;font-size:0.82rem;margin-bottom:0.5rem">Pending Preferred Price Approvals</strong>
+                        <?php foreach ($pendingPriceApprovals as $approval): ?>
+                            <div style="display:flex;justify-content:space-between;gap:0.75rem;align-items:center;flex-wrap:wrap;padding:0.5rem 0;border-top:1px solid #fed7aa;font-size:0.75rem">
+                                <span><?= e((string)($approval['requested_by'] ?? 'POS')) ?> · <?= e((string)($approval['new_value']['0']['name'] ?? 'Preferred price request')) ?></span>
+                                <span style="display:flex;gap:0.35rem">
+                                    <form method="post" action="<?= url('beverage_pos.php?tab=pos') ?>"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="form_action" value="approve_preferred_price"><input type="hidden" name="request_id" value="<?= e((string)($approval['id'] ?? '')) ?>"><button type="submit" style="border:1px solid #86efac;background:#dcfce7;color:#166534;border-radius:5px;padding:0.3rem 0.5rem;font-weight:800;cursor:pointer">Approve</button></form>
+                                    <form method="post" action="<?= url('beverage_pos.php?tab=pos') ?>"><input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="form_action" value="reject_preferred_price"><input type="hidden" name="request_id" value="<?= e((string)($approval['id'] ?? '')) ?>"><button type="submit" style="border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:5px;padding:0.3rem 0.5rem;font-weight:800;cursor:pointer">Reject</button></form>
+                                </span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </section>
         <?php elseif ($activeTab === 'inventory'): ?>
             <!-- Inventory View -->
@@ -5704,6 +5719,7 @@ function addToBevCartWithQty(item, qty) {
     if (existing) {
         existing.qty = totalQty;
         existing.applied_tier = tier.tier_name;
+        existing.approval_base_price = tier.selling_price;
         existing.price_per_unit = tier.selling_price;
         existing.total = tier.selling_price * totalQty;
         existing.rebate_pct = rebatePct;
@@ -5718,6 +5734,7 @@ function addToBevCartWithQty(item, qty) {
             cost_price: cost,
             applied_tier: tier.tier_name,
             price_per_unit: tier.selling_price,
+            approval_base_price: tier.selling_price,
             crate_deposit: parseFloat(item.crate_deposit || 0),
             packaging: item.packaging || 'Unit',
             icon: item.icon || '🥤',
@@ -5738,6 +5755,14 @@ function addToBevCartWithQty(item, qty) {
 
 function removeBevCartItem(itemId) {
     bevCart = bevCart.filter(i => String(i.id) !== String(itemId));
+    updateBevCartUI();
+}
+
+function setPreferredPrice(itemId, value) {
+    const item = bevCart.find((candidate) => String(candidate.id) === String(itemId));
+    if (!item) return;
+    const preferred = parseFloat(value || 0);
+    item.preferred_price = preferred > 0 ? preferred : 0;
     updateBevCartUI();
 }
 
@@ -5769,8 +5794,9 @@ function updateBevCartUI() {
     bevCart.forEach(item => {
         // Re-evaluate tier dynamically based on cart quantity
         const tier = resolveTierForQtyJS(item, item.qty);
-        item.price_per_unit = tier.selling_price;
-        item.applied_tier = tier.tier_name;
+        item.approval_base_price = tier.selling_price;
+        item.price_per_unit = item.preferred_price > 0 ? item.preferred_price : tier.selling_price;
+        item.applied_tier = item.preferred_price > 0 ? 'Preferred price pending approval' : tier.tier_name;
         item.total = item.price_per_unit * item.qty;
 
         const econ = calculateItemEconomicsJS(item.cost_price, item.price_per_unit, item.rebate_pct, item.qty);
@@ -5799,7 +5825,8 @@ function updateBevCartUI() {
                 </div>
                 <div class="cart-item-right" style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0">
                     <span class="cart-item-qty" style="font-weight:700;font-size:0.8rem;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px">x${item.qty}</span>
-                    <span class="cart-item-price" style="font-weight:800;font-size:0.82rem;color:#059669">₦${item.total.toLocaleString()}</span>
+                            <label style="font-size:0.68rem;color:#64748b">Preferred ₦<input type="number" min="0" step="0.01" value="${item.preferred_price || ''}" placeholder="default" onchange="setPreferredPrice('${item.id}', this.value)" style="width:82px;padding:0.25rem;border:1px solid #cbd5e1;border-radius:4px"></label>
+                            <span class="cart-item-price" style="font-weight:800;font-size:0.82rem;color:#059669">₦${item.total.toLocaleString()}</span>
                     <button type="button" class="cart-item-del" onclick="removeBevCartItem('${item.id}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.9rem">✕</button>
                 </div>
             </div>`;

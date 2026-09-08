@@ -122,6 +122,19 @@ class PricingRebateService
         ];
     }
 
+    public static function requestPreferredSalePriceApproval(array $salePayload, array $priceChanges, ?string $user = null): array
+    {
+        return self::requestPriceChangeApproval(
+            'pos_sale_price',
+            'POS-' . date('Ymd-His') . '-' . random_int(100, 999),
+            'Preferred POS Price Approval',
+            [],
+            $priceChanges,
+            ['sale_payload' => $salePayload],
+            $user
+        );
+    }
+
     public static function getPriceChangeApprovals(string $status = 'pending', int $limit = 50): array
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -176,6 +189,8 @@ class PricingRebateService
                 $approvedBy
             );
             $applyResult = ['success' => $product !== null, 'message' => $product ? 'Product price updated after approval.' : 'Product could not be updated.'];
+        } elseif ($entityType === 'pos_sale_price') {
+            $applyResult = ['success' => true, 'message' => 'Preferred POS prices approved.', 'sale_payload' => $request['payload']['sale_payload'] ?? []];
         }
 
         if (empty($applyResult['success'])) {
@@ -188,7 +203,7 @@ class PricingRebateService
         self::saveReviewedPriceChangeApproval($request);
         self::logAudit($entityType, (string)($request['entity_id'] ?? $requestId), (string)($request['action'] ?? 'Price Change') . ' Approved', $request['old_value'] ?? [], $request['new_value'] ?? [], $approvedBy);
 
-        return ['success' => true, 'message' => $applyResult['message'] ?? 'Price change approved.', 'request' => $request];
+        return ['success' => true, 'message' => $applyResult['message'] ?? 'Price change approved.', 'request' => $request, 'sale_payload' => $applyResult['sale_payload'] ?? null];
     }
 
     public static function rejectPriceChange(string $requestId, ?string $reviewer = null): array

@@ -387,7 +387,7 @@ class PosService
             $qty = max(1, (int)($rawItem['qty'] ?? 1));
 
             $snapshot = class_exists('App\Modules\Pos\PricingRebateService')
-                ? PricingRebateService::createLineItemSnapshot($rawItem, $qty, $cashierName, $branchName, null, [
+                ? PricingRebateService::createLineItemSnapshot($rawItem, $qty, $cashierName, $branchName, !empty($payload['_approved_preferred_price']) && (float)($rawItem['preferred_price'] ?? 0) > 0 ? (float)$rawItem['preferred_price'] : null, [
                     'sales_channel' => $salesChannel,
                     'customer_class' => $customerClass,
                     'location' => $branchName,

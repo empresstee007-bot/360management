@@ -43,6 +43,9 @@ $posSettings = $_SESSION['beverage_pos_settings'] ?? [
 $canManagePricing = class_exists('App\Modules\Pos\PricingRebateService')
     ? \App\Modules\Pos\PricingRebateService::canManagePricing($user)
     : in_array($role, ['admin'], true);
+$pendingPriceApprovals = $canManagePricing && class_exists('App\Modules\Pos\PricingRebateService')
+    ? \App\Modules\Pos\PricingRebateService::getPriceChangeApprovals('pending', 50)
+    : [];
 
 // Handle AJAX Request: Get Tiers for SKU
 $requestedAction = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -76,7 +79,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('beverage_pos.php?tab=pos');
     }
 
-    if ($formAction === 'open_cash_drawer') {
+    if ($formAction === 'approve_preferred_price') {
+        if (!$canManagePricing) {
+            flash('⚠️ Permission denied: only managers can approve preferred POS prices.');
+        } else {
+            $approval = \App\Modules\Pos\PricingRebateService::approvePriceChange((string)($_POST['request_id'] ?? ''), $user['name'] ?? 'Manager');
+            $salePayload = $approval['sale_payload'] ?? null;
+            if ($approval['success'] && is_array($salePayload)) {
+                $salePayload['_approved_preferred_price'] = '1';
+                $salePayload['form_action'] = 'process_sale';
+                $salePayload['pos_mode'] = 'beverage';
+                $receipt = PosService::processSale($salePayload);
+                flash(!empty($receipt['error']) ? '⚠️ Approval succeeded, but the sale could not be completed: ' . ($receipt['message'] ?? 'Unknown error.') : '✅ Preferred price approved and sale completed. Receipt: ' . ($receipt['receipt_no'] ?? 'created'));
+            } else {
+                flash('⚠️ ' . ($approval['message'] ?? 'Preferred price approval failed.'));
+            }
+        }
+        redirect('beverage_pos.php?tab=pos');
+    } elseif ($formAction === 'reject_preferred_price') {
+        if (!$canManagePricing) {
+            flash('⚠️ Permission denied: only managers can reject preferred POS prices.');
+        } else {
+            $approval = \App\Modules\Pos\PricingRebateService::rejectPriceChange((string)($_POST['request_id'] ?? ''), $user['name'] ?? 'Manager');
+            flash($approval['success'] ? '✅ Preferred price request rejected.' : '⚠️ ' . ($approval['message'] ?? 'Could not reject request.'));
+        }
+        redirect('beverage_pos.php?tab=pos');
+    } elseif ($formAction === 'open_cash_drawer') {
         $actionData = HrPayrollService::openCashierSession($_POST, $user);
         $drawer = $actionData['session'] ?? [];
         $actionMessage = (string)($actionData['message'] ?? 'Cash drawer opened.') . ' Opening cash: ₦' . number_format((float)($drawer['opening_cash'] ?? 0), 2);
@@ -159,6 +187,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $activeTab = 'promotions';
         }
     } elseif ($formAction === 'process_sale') {
+        $preferredPriceChanges = [];
+        $cartItems = json_decode((string)($_POST['cart_items'] ?? '[]'), true) ?: [];
+        foreach ($cartItems as $cartItem) {
+            $preferredPrice = (float)($cartItem['preferred_price'] ?? 0);
+            $currentPrice = (float)($cartItem['approval_base_price'] ?? $cartItem['price_per_unit'] ?? 0);
+            if ($preferredPrice > 0 && abs($preferredPrice - $currentPrice) > 0.009) {
+                $preferredPriceChanges[] = ['sku' => (string)($cartItem['sku'] ?? ''), 'name' => (string)($cartItem['name'] ?? ''), 'current_price' => $currentPrice, 'preferred_price' => $preferredPrice, 'qty' => (int)($cartItem['qty'] ?? 1)];
+            }
+        }
+        if ($role === 'pos' && $preferredPriceChanges && empty($_POST['_approved_preferred_price'])) {
+            $approval = \App\Modules\Pos\PricingRebateService::requestPreferredSalePriceApproval($_POST, $preferredPriceChanges, $user['name'] ?? 'POS');
+            flash($approval['success'] ? '✅ Preferred price submitted for manager approval. The sale will remain pending until approved.' : '⚠️ Could not submit preferred price for approval.');
+            redirect('beverage_pos.php?tab=pos');
+        }
         $_POST['pos_mode'] = 'beverage';
         $printedReceipt = PosService::processSale($_POST);
         if (!empty($printedReceipt['error'])) {
